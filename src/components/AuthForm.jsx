@@ -3,6 +3,8 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
 
 const AuthForm = ({ mode }) => {
   const { authenticateUser } = useContext(AuthContext);
@@ -14,17 +16,17 @@ const AuthForm = ({ mode }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log("bonjour les infos", username, password);
+      console.log("bonjour les infos", username, password, BACKEND_URL);
       const userToLogin = { username, password };
       if (mode === "Signup") {
         const response = await axios.post(
-          "http://localhost:3000/api/auth/signup",
+          `${BACKEND_URL}/api/auth/signup`,
           userToLogin
         );
         navigate("/auth/login");
       } else {
         const response = await axios.post(
-          "http://localhost:3000/api/auth/login",
+          `${BACKEND_URL}/api/auth/login`,
           userToLogin
         );
         localStorage.setItem("token", response.data.token);
