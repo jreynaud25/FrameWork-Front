@@ -24,27 +24,17 @@ const CreateDesign = () => {
     console.log(event.target);
     const fd = new FormData();
     fd.append("name", name);
-    fd.append("figmaID", figmaID);
-    fd.append("figmaNodeId", figmaNodeId);
-    fd.append("client", selectedClient);
-    fd.append("numberOfTextEntries", numberOfTextEntries);
-
-    const arrOfDefaultText = defaultText.slice(0, numberOfTextEntries);
-    console.log(
-      "salut array to send",
-      arrOfDefaultText,
-      typeof arrOfDefaultText
-    );
-    fd.append("defaultText", arrOfDefaultText);
-    //fd.append("defaultText[]", arrOfDefaultText);
-
-    console.log("voila le fd");
+    fd.append("picture", picture);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/designs`, fd, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/rubberduck",
+        fd,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       console.log(response);
     } catch (error) {
       console.log(error);

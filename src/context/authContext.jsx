@@ -1,6 +1,10 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+<<<<<<< HEAD
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+=======
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
+>>>>>>> e7cbbee (adding vercel support)
 
 export const AuthContext = createContext();
 const AuthContextWrapper = ({ children }) => {
@@ -23,7 +27,11 @@ const AuthContextWrapper = ({ children }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+<<<<<<< HEAD
        // console.log(response);
+=======
+        console.log(response);
+>>>>>>> e7cbbee (adding vercel support)
 
         // Set the received user infos to my user state
         // Set is logged in to true.
