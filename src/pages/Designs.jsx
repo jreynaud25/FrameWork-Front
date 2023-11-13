@@ -2,18 +2,19 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, NavLink } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const Designs = () => {
   const [designs, setDesigns] = useState([]);
   const getDesigns = async () => {
     try {
-      const allDesigns = await axios.get(`${BACKEND_URL}/api/rubberduck`, {
+      const allDesigns = await axios.get(`${BACKEND_URL}/api/designs`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       setDesigns(allDesigns.data);
+      console.log(allDesigns.data);
     } catch (error) {
       console.log(error);
     }

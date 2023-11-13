@@ -3,14 +3,14 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const OneDuck = () => {
   const [duck, setDuck] = useState();
   const { id } = useParams();
   const getDuck = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/api/rubberduck/${id}`, {
+      const res = await axios.get(`${BACKEND_URL}/api/designs/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

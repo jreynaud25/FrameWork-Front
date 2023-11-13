@@ -3,8 +3,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const AuthForm = ({ mode }) => {
   const { authenticateUser } = useContext(AuthContext);
@@ -12,7 +11,8 @@ const AuthForm = ({ mode }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  console.log(username);
+  console.log("bonjour le signup");
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {

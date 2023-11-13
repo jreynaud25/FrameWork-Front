@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const CreateDesign = () => {
   const [name, setName] = useState("");
+  const [figmaID, setfigmaID] = useState("");
   const [picture, setPicture] = useState("");
 
   function handleFile(event) {
@@ -17,8 +18,9 @@ const CreateDesign = () => {
     const fd = new FormData();
     fd.append("name", name);
     fd.append("picture", picture);
+    fd.append("figmaID", figmaID);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/rubberduck`, fd, {
+      const response = await axios.post(`${BACKEND_URL}/api/designs`, fd, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -28,7 +30,9 @@ const CreateDesign = () => {
       console.log(error);
     }
   }
-
+  useEffect(() => {
+    console.log("test du useEFFECT");
+  }, [name]);
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -38,6 +42,14 @@ const CreateDesign = () => {
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
+          />
+        </div>
+        <div>
+          <label htmlFor="figmaID">Figma ID: </label>
+          <input
+            type="text"
+            value={figmaID}
+            onChange={(event) => setfigmaID(event.target.value)}
           />
         </div>
         <div>

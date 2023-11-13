@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 
 const Clients = () => {
@@ -9,7 +9,7 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/student`);
+      const response = await axios.get(`${BACKEND_URL}/api/client`);
       console.log(response);
       setClients(response.data);
     } catch (error) {
@@ -24,15 +24,15 @@ const Clients = () => {
       <h2>Clients:</h2>
       <div className="container">
         La lsit de designs
-        {/* {students.map((student) => {
+        {clients.map((client) => {
           return (
-            <div key={student._id} className="card">
+            <div key={client._id} className="card">
               <p>
-                {student.username} {student.status}
+                {client.username} {client.status}
               </p>
             </div>
           );
-        })} */}
+        })}
       </div>
     </div>
   );
