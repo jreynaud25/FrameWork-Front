@@ -6,7 +6,7 @@ import { AuthContext } from "../context/authContext";
 
 const Navbar = () => {
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
-  console.log(user);
+  //console.log(user);
   const logout = () => {
     localStorage.removeItem("token");
     authenticateUser();
@@ -29,7 +29,7 @@ const Navbar = () => {
           </>
         )}
         <li>
-          <NavLink to={"/profile"}>{user?.username}</NavLink>
+          <NavLink to={"/Designs"}>{user?.username}</NavLink>
         </li>
 
         {isLoggedIn && user.status === "admin" && (
@@ -37,13 +37,13 @@ const Navbar = () => {
             <li>
               <NavLink to={"/Clients"}>Clients</NavLink>
             </li>
+            <li>
+              <NavLink to={"/Designs"}>Designs</NavLink>
+            </li>
           </>
         )}
         {isLoggedIn && (
           <>
-            <li>
-              <NavLink to={"/Designs"}>Designs</NavLink>
-            </li>
             <li>
               <button onClick={logout}>Logout</button>
             </li>

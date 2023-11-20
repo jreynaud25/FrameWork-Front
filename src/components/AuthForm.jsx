@@ -9,15 +9,14 @@ const AuthForm = ({ mode }) => {
   const { authenticateUser } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  console.log(username);
-  console.log("bonjour le signup");
+  //console.log(username);
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log("bonjour les infos", username, password, BACKEND_URL);
-      const userToLogin = { username, password };
+      const userToLogin = { username, password, email };
       if (mode === "Signup") {
         const response = await axios.post(
           `${BACKEND_URL}/api/auth/signup`,
@@ -57,6 +56,16 @@ const AuthForm = ({ mode }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        {mode === "Signup" ? (
+          <div>
+            <label htmlFor="email">email: </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+        ) : null}
 
         <p style={{ color: "red" }}>{error}</p>
 

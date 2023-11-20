@@ -7,7 +7,10 @@ const CreateDesign = () => {
   const [name, setName] = useState("");
   const [figmaID, setfigmaID] = useState("");
   const [picture, setPicture] = useState("");
-
+  const [figmaNodeId, setFigmaNodeId] = useState("");
+  const [clients, setClients] = useState("");
+  const [selectedClient, setSelectedClient] = useState("jean");
+  const [numberOfTextEntries, setNumberOfTextEntries] = useState(0);
   function handleFile(event) {
     console.log(event.target.files);
     setPicture(event.target.files[0]);
@@ -15,10 +18,16 @@ const CreateDesign = () => {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    console.log(event.target);
     const fd = new FormData();
     fd.append("name", name);
-    fd.append("picture", picture);
     fd.append("figmaID", figmaID);
+    fd.append("figmaNodeId", figmaNodeId);
+    fd.append("client", selectedClient);
+    fd.append("numberOfTextEntries", numberOfTextEntries);
+
+    console.log("voila le fd", name, figmaID, figmaNodeId, selectedClient);
     try {
       const response = await axios.post(`${BACKEND_URL}/api/designs`, fd, {
         headers: {
@@ -30,9 +39,25 @@ const CreateDesign = () => {
       console.log(error);
     }
   }
+
+  const fetchClients = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/client`);
+      setClients(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    console.log("test du useEFFECT");
-  }, [name]);
+    console.log("fetching clients");
+    fetchClients();
+  }, []);
+
+  if (!clients) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -53,10 +78,45 @@ const CreateDesign = () => {
           />
         </div>
         <div>
-          <label htmlFor="picture">Picture:</label>
-          <input type="file" onChange={handleFile} />
+          <label htmlFor="node">
+            Figma node ids, like "1-54" without the quotes :{" "}
+          </label>
+          <input
+            type="text"
+            value={figmaNodeId}
+            onChange={(event) => setFigmaNodeId(event.target.value)}
+          />
         </div>
 
+        <div>
+          <label htmlFor="selectedClient">Client Name</label>
+          <select
+            value={selectedClient}
+            onChange={(e) => setSelectedClient(e.target.value)}
+          >
+            {clients.map((c, index) => {
+              return (
+                <option key={c.username} value={c.username}>
+                  {c.username}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
+        {/* <div>
+          <label htmlFor="picture">Picture:</label>
+          <input type="file" onChange={handleFile} />
+        </div> */}
+        <div>
+          <label htmlFor="numberOfTextEntries">numberOfTextEntries </label>
+          <input
+            id="number"
+            type="number"
+            value={numberOfTextEntries}
+            onChange={(e) => setNumberOfTextEntries(e.target.value)}
+          />
+        </div>
         <button>Create a design</button>
       </form>
 

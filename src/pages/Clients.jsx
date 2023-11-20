@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { NavLink } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
-
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -23,7 +22,7 @@ const Clients = () => {
     <div>
       <h2>Clients:</h2>
       <div className="container">
-        La lsit de designs
+        La list de clients
         {clients.map((client) => {
           return (
             <div key={client._id} className="card">
@@ -33,6 +32,11 @@ const Clients = () => {
             </div>
           );
         })}
+      </div>
+      <div>
+        <li>
+          <NavLink to={"/auth/signup"}>Ajouter Client</NavLink>
+        </li>
       </div>
     </div>
   );

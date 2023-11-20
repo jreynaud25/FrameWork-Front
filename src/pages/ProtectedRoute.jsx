@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
 	if (isLoading) {
 		return <p>Loading...</p>
 	}
-	console.table(isLoading, isLoggedIn, user)
+	//console.table(isLoading, isLoggedIn, user)
 	if (!isLoggedIn) {
 		return <Navigate to={"/"} />
 	}
