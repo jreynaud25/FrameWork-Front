@@ -11,6 +11,8 @@ const OneDesign = () => {
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
+  const [picture, setPicture] = useState("");
+
   const { id } = useParams();
   const getDesign = async () => {
     try {
@@ -30,7 +32,7 @@ const OneDesign = () => {
   };
 
   //Download the design
-  const dowloadDesign = async () => {
+  const dowloadDesign = async (setChange) => {
     try {
       const res = await axios
         .get(
@@ -44,6 +46,9 @@ const OneDesign = () => {
         )
         .then((res) => {
           setTodownload(res.data.images[Object.keys(res.data.images)[0]]);
+          if (setChange) {
+            setIsGenerated(true);
+          }
         });
     } catch (error) {
       console.log(error);
@@ -52,24 +57,31 @@ const OneDesign = () => {
 
   //Generate the new design
   const generateDesign = async () => {
+    const fd = new FormData();
+    fd.append("newText", newText);
+    fd.append("picture", picture);
+
     try {
       const res = await axios
-        .patch(`${BACKEND_URL}/api/designs/${id}`, newText, {
+        .patch(`${BACKEND_URL}/api/designs/${id}`, fd, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         })
         .then((res) => {
-         // setDesign(res.data);
+          // setDesign(res.data);
           console.log("reponse from generating ", res.data);
+          dowloadDesign(true);
         });
     } catch (error) {
       console.log(error);
     }
-
-    //setIsGenerated(true);
   };
 
+  function handleFile(event) {
+    console.log(event.target.files);
+    setPicture(event.target.files[0]);
+  }
   // The Page generation
   useEffect(() => {
     getDesign();
@@ -109,6 +121,11 @@ const OneDesign = () => {
               </label>
             );
           })}
+
+          <div>
+            <label htmlFor="picture">Picture:</label>
+            <input type="file" onChange={handleFile} />
+          </div>
         </form>
         {!isGenerated ? (
           <button onClick={generateDesign}>Generate the image</button>

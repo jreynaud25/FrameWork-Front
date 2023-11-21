@@ -10,7 +10,9 @@ const CreateDesign = () => {
   const [figmaNodeId, setFigmaNodeId] = useState("");
   const [clients, setClients] = useState("");
   const [selectedClient, setSelectedClient] = useState("jean");
+  const [defaultText, setDefaultText] = useState([]);
   const [numberOfTextEntries, setNumberOfTextEntries] = useState(0);
+
   function handleFile(event) {
     console.log(event.target.files);
     setPicture(event.target.files[0]);
@@ -27,7 +29,16 @@ const CreateDesign = () => {
     fd.append("client", selectedClient);
     fd.append("numberOfTextEntries", numberOfTextEntries);
 
-    console.log("voila le fd", name, figmaID, figmaNodeId, selectedClient);
+    const arrOfDefaultText = defaultText.slice(0, numberOfTextEntries);
+    console.log(
+      "salut array to send",
+      arrOfDefaultText,
+      typeof arrOfDefaultText
+    );
+    fd.append("defaultText", arrOfDefaultText);
+    //fd.append("defaultText[]", arrOfDefaultText);
+
+    console.log("voila le fd");
     try {
       const response = await axios.post(`${BACKEND_URL}/api/designs`, fd, {
         headers: {
@@ -114,8 +125,27 @@ const CreateDesign = () => {
             id="number"
             type="number"
             value={numberOfTextEntries}
-            onChange={(e) => setNumberOfTextEntries(e.target.value)}
+            onChange={(e) => {
+              setNumberOfTextEntries(parseInt(e.target.value, 10));
+            }}
           />
+        </div>
+        <div>
+          {Array.from({ length: numberOfTextEntries })
+            .fill(0)
+            .map((e, i) => (
+              <input
+                key={i}
+                placeholder={`DefaultValue${i}`}
+                onChange={(val) => {
+                  console.log("salut la val et l'index", i);
+                  let temp = defaultText;
+                  temp[i] = val.target.value;
+                  setDefaultText(temp);
+                  console.log(temp);
+                }}
+              ></input>
+            ))}
         </div>
         <button>Create a design</button>
       </form>
