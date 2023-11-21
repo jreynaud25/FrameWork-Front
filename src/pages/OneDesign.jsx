@@ -40,7 +40,6 @@ const OneDesign = () => {
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
-              //"X-Figma-Token": "figd_p_oI7cST7l_VVrHfc-howqf0NbXaVadEHb9vBZC3",
             },
           }
         )
