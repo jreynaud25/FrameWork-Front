@@ -26,15 +26,11 @@ const CreateDesign = () => {
     fd.append("name", name);
     fd.append("picture", picture);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/rubberduck",
-        fd,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.post(`${BACKEND_URL}/api/rubberduck`, fd, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       console.log(response);
     } catch (error) {
       console.log(error);

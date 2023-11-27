@@ -3,10 +3,8 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
-
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/";
-
 const AuthForm = ({ mode }) => {
   const { authenticateUser } = useContext(AuthContext);
   const [username, setUsername] = useState("");

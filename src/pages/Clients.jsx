@@ -8,7 +8,7 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/client`);
+      const response = await axios.get(`${BACKEND_URL}/api/student`);
       console.log(response);
       setClients(response.data);
     } catch (error) {
