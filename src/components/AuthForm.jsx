@@ -14,7 +14,7 @@ const AuthForm = ({ mode }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  //console.log(username);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
