@@ -12,6 +12,7 @@ const Designs = () => {
   const getDesigns = async () => {
     try {
       const allDesigns = await axios.get(`${BACKEND_URL}/api/designs/all`, {
+
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
