@@ -57,4 +57,5 @@ const Designs = () => {
     </div>
   );
 };
+
 export default Designs;

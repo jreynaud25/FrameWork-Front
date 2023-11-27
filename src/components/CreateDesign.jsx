@@ -41,6 +41,7 @@ const CreateDesign = () => {
     console.log("voila le fd");
     try {
       const response = await axios.post(`${BACKEND_URL}/api/designs`, fd, {
+
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

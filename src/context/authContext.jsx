@@ -25,7 +25,6 @@ const AuthContextWrapper = ({ children }) => {
           },
         });
 
-        console.log(response);
 
         // Set the received user infos to my user state
         // Set is logged in to true.
