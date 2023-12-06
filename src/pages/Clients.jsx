@@ -8,8 +8,8 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/clients`);
-      console.log(response);
+      const response = await axios.get(`${BACKEND_URL}/api/client`);
+      console.log("les clients", response);
       setClients(response.data);
     } catch (error) {
       console.log(error);
@@ -27,7 +27,7 @@ const Clients = () => {
           return (
             <div key={client._id} className="card">
               <p>
-                {client.username} {client.status}
+                {client.username} {client.status} {client.email}
               </p>
             </div>
           );
@@ -35,7 +35,7 @@ const Clients = () => {
       </div>
       <div>
         <li>
-          <NavLink to={"/auth/signup"}>Ajouter Client</NavLink>
+          <NavLink to={"/auth/create"}>Ajouter Client</NavLink>
         </li>
       </div>
     </div>

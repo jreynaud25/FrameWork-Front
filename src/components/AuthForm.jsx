@@ -17,12 +17,12 @@ const AuthForm = ({ mode }) => {
     try {
       const userToLogin = { username, password, email };
 
-      if (mode === "Signup") {
+      if (mode === "Create") {
         const response = await axios.post(
-          `${BACKEND_URL}/api/auth/signup`,
+          `${BACKEND_URL}/api/client`,
           userToLogin
         );
-        navigate("/auth/login");
+        navigate("/Clients");
       } else {
         const response = await axios.post(
           `${BACKEND_URL}/api/auth/login`,
@@ -31,6 +31,7 @@ const AuthForm = ({ mode }) => {
         localStorage.setItem("token", response.data.token);
         setError("");
         await authenticateUser();
+        navigate("/designs");
       }
     } catch (error) {
       console.log(error);
@@ -56,7 +57,7 @@ const AuthForm = ({ mode }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        {mode === "Signup" ? (
+        {mode === "Create" ? (
           <div>
             <label htmlFor="email">email: </label>
             <input
