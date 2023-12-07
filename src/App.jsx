@@ -18,7 +18,7 @@ function App() {
     <>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Homepage />}></Route>
+          <Route path="/" element={<AuthForm mode="Log in" />}></Route>
           <Route element={<IsAdmin />}>
             <Route path="/Clients" element={<Clients />}></Route>
           </Route>
@@ -30,7 +30,7 @@ function App() {
 
           <Route path="/auth">
             <Route path="login" element={<AuthForm mode="Log in" />} />
-            <Route path="signup" element={<AuthForm mode="Signup" />} />
+            <Route path="create" element={<AuthForm mode="Create" />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>

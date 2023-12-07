@@ -1,6 +1,6 @@
 .Navbar {
 	height: 4.5rem;
-	background-color: black;
+	background-color: #80A8BA;
 	color: white;
 	padding: 0 2rem;
 	& a {
@@ -15,7 +15,7 @@
 		transition: all 200ms ease-in-out;
 	}
 	& a.active {
-		color: dodgerblue;
+		/* color: dodgerblue; */
 	}
 
 	& ul {

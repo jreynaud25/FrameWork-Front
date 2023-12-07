@@ -25,6 +25,7 @@ const OneDesign = () => {
         .then((res) => {
           setDesign(res.data);
           console.log("got the deisgn", res.data);
+          setNewText(res.data.textValues);
         });
     } catch (error) {
       console.log(error);
@@ -100,18 +101,16 @@ const OneDesign = () => {
         ) : (
           <img src={toDownload} alt={design.name} width={300} />
         )}
-        {/* <p>{design.figmaID}</p>
-        <p>{design.figmaNodeIDs}</p> */}
 
         <form>
           {design.textValues.map((element, index) => {
             return (
-              <label key={element}>
+              <label key={index}>
                 <input
-                  placeholder={element}
+                  value={newText[index]}
                   onChange={(val) => {
                     console.log("salut la val et l'index", index);
-                    let temp = newText;
+                    let temp = [...newText];
                     temp[index] = val.target.value;
                     setNewText(temp);
                     console.log(temp);

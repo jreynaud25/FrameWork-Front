@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./AuthForm.css";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
@@ -17,12 +18,12 @@ const AuthForm = ({ mode }) => {
     try {
       const userToLogin = { username, password, email };
 
-      if (mode === "Signup") {
+      if (mode === "Create") {
         const response = await axios.post(
-          `${BACKEND_URL}/api/auth/signup`,
+          `${BACKEND_URL}/api/client`,
           userToLogin
         );
-        navigate("/auth/login");
+        navigate("/Clients");
       } else {
         const response = await axios.post(
           `${BACKEND_URL}/api/auth/login`,
@@ -31,6 +32,7 @@ const AuthForm = ({ mode }) => {
         localStorage.setItem("token", response.data.token);
         setError("");
         await authenticateUser();
+        navigate("/designs");
       }
     } catch (error) {
       console.log(error);
@@ -39,9 +41,9 @@ const AuthForm = ({ mode }) => {
   };
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form className="login-container" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="username">Username: </label>
+          <label className="title" htmlFor="username">Username: </label>
           <input
             type="text"
             value={username}
@@ -49,14 +51,14 @@ const AuthForm = ({ mode }) => {
           />
         </div>
         <div>
-          <label htmlFor="password">Password: </label>
+          <label className="title" htmlFor="password">Password: </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        {mode === "Signup" ? (
+        {mode === "Create" ? (
           <div>
             <label htmlFor="email">email: </label>
             <input
