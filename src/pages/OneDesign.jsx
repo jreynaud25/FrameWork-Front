@@ -8,6 +8,8 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 //Retriving the design
 const OneDesign = () => {
   const [design, setDesign] = useState();
+  const [clients, setClients] = useState("");
+
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
@@ -24,7 +26,8 @@ const OneDesign = () => {
         })
         .then((res) => {
           setDesign(res.data);
-          console.log("got the deisgn", res.data);
+          setClients(res.data.usedBy);
+          console.log("got the deisgn", res.data, res.data.usedBy);
           setNewText(res.data.textValues);
         });
     } catch (error) {
@@ -87,10 +90,14 @@ const OneDesign = () => {
     getDesign();
   }, []);
 
+  useEffect(() => {
+    console.log('bonjour le download design dans le useeffects')
+    dowloadDesign();
+  }, [design]);
+
   if (!design) {
     return <div>Loading...</div>;
   }
-  dowloadDesign();
 
   return (
     <div>
@@ -106,6 +113,7 @@ const OneDesign = () => {
           {design.textValues.map((element, index) => {
             return (
               <label key={index}>
+                Champ numéro {index + 1}
                 <input
                   value={newText[index]}
                   onChange={(val) => {
@@ -120,11 +128,14 @@ const OneDesign = () => {
             );
           })}
 
+          <div>Useb by</div>
+          {clients.map((client) => {
+            return <div>{client.username}</div>;
+          })}
           <div>
             <label htmlFor="picture">Picture:</label>
             <input type="file" onChange={handleFile} />
           </div>
-        </form>
         {!isGenerated ? (
           <button onClick={generateDesign}>Generate the image</button>
         ) : (
@@ -132,6 +143,7 @@ const OneDesign = () => {
             Downlaod
           </a>
         )}
+        </form>
       </div>
     </div>
   );
