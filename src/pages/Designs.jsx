@@ -12,7 +12,6 @@ const Designs = () => {
   const getDesigns = async () => {
     try {
       const allDesigns = await axios.get(`${BACKEND_URL}/api/designs/all`, {
-
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -46,7 +45,12 @@ const Designs = () => {
   }, []);
   return (
     <div>
-      <NavLink to={"/Designs/create"}>Create Desgins</NavLink>
+      {isLoggedIn && user.status === "admin" && (
+        <>
+          <NavLink to={"/Designs/create"}>Create Desgins</NavLink>
+        </>
+      )}
+
       {designs.map((design) => {
         return (
           <div key={design._id}>

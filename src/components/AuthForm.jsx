@@ -6,13 +6,16 @@ import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const AuthForm = ({ mode }) => {
-  const { authenticateUser } = useContext(AuthContext);
+  const { authenticateUser, isLoggedIn } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  if (isLoggedIn) {
+    navigate("/designs");
+  }
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -43,7 +46,9 @@ const AuthForm = ({ mode }) => {
     <div>
       <form className="login-container" onSubmit={handleSubmit}>
         <div>
-          <label className="title" htmlFor="username">Username: </label>
+          <label className="title" htmlFor="username">
+            Username:{" "}
+          </label>
           <input
             type="text"
             value={username}
@@ -51,7 +56,9 @@ const AuthForm = ({ mode }) => {
           />
         </div>
         <div>
-          <label className="title" htmlFor="password">Password: </label>
+          <label className="title" htmlFor="password">
+            Password:{" "}
+          </label>
           <input
             type="password"
             value={password}
