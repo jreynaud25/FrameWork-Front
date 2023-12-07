@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./AuthForm.css";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
@@ -40,9 +41,9 @@ const AuthForm = ({ mode }) => {
   };
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form className="login-container" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="username">Username: </label>
+          <label className="title" htmlFor="username">Username: </label>
           <input
             type="text"
             value={username}
@@ -50,7 +51,7 @@ const AuthForm = ({ mode }) => {
           />
         </div>
         <div>
-          <label htmlFor="password">Password: </label>
+          <label className="title" htmlFor="password">Password: </label>
           <input
             type="password"
             value={password}

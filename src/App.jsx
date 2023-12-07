@@ -18,7 +18,7 @@ function App() {
     <>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Homepage />}></Route>
+          <Route path="/" element={<AuthForm mode="Log in" />}></Route>
           <Route element={<IsAdmin />}>
             <Route path="/Clients" element={<Clients />}></Route>
           </Route>

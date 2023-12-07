@@ -13,19 +13,18 @@ const Navbar = () => {
   };
   return (
     <nav className="Navbar">
-      <NavLink to={"/"}>Framework</NavLink>
+      <NavLink to={"/"}>
+        <h1>Framework.</h1>
+      </NavLink>
       <ul>
-        <li>
+        {/* <li>
           <NavLink to={"/"}>Home</NavLink>
-        </li>
+        </li> */}
         {!isLoggedIn && (
           <>
-            <li>
+            {/* <li>
               <NavLink to={"/auth/login"}>Log in</NavLink>
-            </li>
-            <li>
-              <NavLink to={"/auth/signup"}>Sign up</NavLink>
-            </li>
+            </li> */}
           </>
         )}
         <li>
@@ -40,6 +39,9 @@ const Navbar = () => {
             <li>
               <NavLink to={"/Designs"}>Designs</NavLink>
             </li>
+            {/* <li>
+              <NavLink to={"/auth/signup"}>Create User</NavLink>
+            </li> */}
           </>
         )}
         {isLoggedIn && (
