@@ -91,7 +91,7 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
-    console.log('bonjour le download design dans le useeffects')
+    console.log("bonjour le download design dans le useeffects");
     dowloadDesign();
   }, [design]);
 
@@ -136,13 +136,10 @@ const OneDesign = () => {
             <label htmlFor="picture">Picture:</label>
             <input type="file" onChange={handleFile} />
           </div>
-        {!isGenerated ? (
           <button onClick={generateDesign}>Generate the image</button>
-        ) : (
           <a href={toDownload} download>
             Downlaod
           </a>
-        )}
         </form>
       </div>
     </div>
