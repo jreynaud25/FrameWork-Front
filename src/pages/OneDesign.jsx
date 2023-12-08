@@ -40,7 +40,7 @@ const OneDesign = () => {
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.figmaID}?ids=${design.figmaNodeIDs}&format=png`,
+          `https://api.figma.com/v1/images/${design.figmaID}?ids=${design.figmaFrameID}&format=png`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
