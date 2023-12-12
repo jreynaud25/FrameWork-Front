@@ -14,7 +14,7 @@ const AuthForm = ({ mode }) => {
   const navigate = useNavigate();
 
   if (isLoggedIn) {
-    navigate("/designs");
+    // navigate("/designs");
   }
   const handleSubmit = async (event) => {
     event.preventDefault();

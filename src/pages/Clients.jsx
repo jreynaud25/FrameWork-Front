@@ -18,6 +18,22 @@ const Clients = () => {
   useEffect(() => {
     fetchClients();
   }, []);
+
+  const handleDelete = async (id) => {
+    console.log("should delete client with id:", id);
+    try {
+      const response = await axios.delete(`${BACKEND_URL}/api/client/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("Deleted client:", response.data);
+      fetchClients();
+      // After successful deletion, you can update the clients list in your state or perform any other actions.
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <h2>Clients:</h2>
@@ -27,7 +43,11 @@ const Clients = () => {
           return (
             <div key={client._id} className="card">
               <p>
-                {client.username} {client.status} {client.email}
+                {client.username} {client.status} {client.email}{" "}
+                <button onClick={() => handleDelete(client._id)}>
+                  {" "}
+                  Delete
+                </button>
               </p>
             </div>
           );
