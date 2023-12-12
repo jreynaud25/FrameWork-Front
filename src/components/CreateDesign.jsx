@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const CreateDesign = () => {
   const [name, setName] = useState("");
   const [figmaID, setfigmaID] = useState("");
-  const [picture, setPicture] = useState("");
+  // const [picture, setPicture] = useState("");
   const [figmaNodeId, setFigmaNodeId] = useState("");
   const [clients, setClients] = useState("");
   const [selectedClient, setSelectedClient] = useState("jean");
   const [defaultText, setDefaultText] = useState([]);
   const [numberOfTextEntries, setNumberOfTextEntries] = useState(0);
-
-  function handleFile(event) {
-    console.log(event.target.files);
-    setPicture(event.target.files[0]);
-  }
+  const navigate = useNavigate();
+  // function handleFile(event) {
+  //   console.log(event.target.files);
+  //   setPicture(event.target.files[0]);
+  // }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -41,12 +41,12 @@ const CreateDesign = () => {
     console.log("voila le fd");
     try {
       const response = await axios.post(`${BACKEND_URL}/api/designs`, fd, {
-
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log(response);
+      console.log("here the response", response, response.data._id);
+      navigate(`/designs/${response.data._id}`);
     } catch (error) {
       console.log(error);
     }
