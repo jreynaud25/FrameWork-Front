@@ -7,8 +7,8 @@ const NotFound = () => {
       <h3>
         It looks like there is nothing here, 404. Check your url, or go back{" "}
       </h3>
-      <NavLink to={"/"}>
-        <h1>Home.</h1>
+      <NavLink to={"/designs"}>
+        <h1>Designs.</h1>
       </NavLink>
     </div>
   );

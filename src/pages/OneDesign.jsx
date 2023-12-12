@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
+// import { AuthContext } from "../context/authContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
@@ -9,6 +10,8 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 const OneDesign = () => {
   const [design, setDesign] = useState();
   const [clients, setClients] = useState("");
+  // const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
+  const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
 
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
@@ -31,7 +34,8 @@ const OneDesign = () => {
           setNewText(res.data.textValues);
         });
     } catch (error) {
-      console.log(error);
+      console.log("there is an error", error);
+      navigate("/notfound");
     }
   };
 
@@ -59,7 +63,8 @@ const OneDesign = () => {
   };
 
   //Generate the new design
-  const generateDesign = async () => {
+  const generateDesign = async (event) => {
+    event.preventDefault();
     const fd = new FormData();
     fd.append("newText", newText);
     fd.append("picture", picture);
@@ -85,6 +90,27 @@ const OneDesign = () => {
     console.log(event.target.files);
     setPicture(event.target.files[0]);
   }
+  const handleDelete = async (event) => {
+    console.log("Handle delete");
+    event.preventDefault();
+
+    try {
+      const res = await axios
+        .delete(`${BACKEND_URL}/api/designs/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          // setDesign(res.data);
+          console.log("reponse from generating ", res.data);
+          navigate("/designs");
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // The Page generation
   useEffect(() => {
     getDesign();
@@ -137,9 +163,10 @@ const OneDesign = () => {
             <input type="file" onChange={handleFile} />
           </div>
           <button onClick={generateDesign}>Generate the image</button>
-          <a href={toDownload} download>
+          <a href={toDownload} Name="btn">
             Downlaod
           </a>
+          <button onClick={handleDelete}>Delete</button>
         </form>
       </div>
     </div>
