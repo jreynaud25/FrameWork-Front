@@ -44,19 +44,18 @@ const Clients = () => {
             <div key={client._id} className="card">
               <p>
                 {client.username} {client.status} {client.email}{" "}
-                <button onClick={() => handleDelete(client._id)}>
-                  {" "}
-                  Delete
-                </button>
+                <button onClick={() => handleDelete(client._id)}>Delete</button>
               </p>
             </div>
           );
         })}
       </div>
       <div>
-        <li>
-          <NavLink to={"/auth/create"}>Ajouter Client</NavLink>
-        </li>
+        
+          <NavLink to={"/auth/create"}>
+            <button className="btn">Ajouter Client </button>
+          </NavLink>
+        
       </div>
     </div>
   );

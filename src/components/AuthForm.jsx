@@ -78,7 +78,7 @@ const AuthForm = ({ mode }) => {
 
         <p style={{ color: "red" }}>{error}</p>
 
-        <button>{mode}</button>
+        <button className="btn">{mode}</button>
       </form>
     </div>
   );

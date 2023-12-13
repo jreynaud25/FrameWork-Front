@@ -8,6 +8,17 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const Designs = () => {
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const [designs, setDesigns] = useState([]);
+  const [clients, setClients] = useState([]);
+
+  const fetchClients = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/client`);
+      console.log("les clients", response);
+      setClients(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getDesigns = async () => {
     try {
@@ -17,7 +28,7 @@ const Designs = () => {
         },
       });
       setDesigns(allDesigns.data);
-      console.log(allDesigns.data);
+      console.log("les designs", allDesigns.data);
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +41,7 @@ const Designs = () => {
         },
       });
       setDesigns(allDesigns.data);
-      console.log(allDesigns.data);
+      console.log("les designs", allDesigns.data);
     } catch (error) {
       console.log(error);
     }
@@ -39,25 +50,50 @@ const Designs = () => {
   useEffect(() => {
     if (isLoggedIn && user.status === "admin") {
       getDesigns();
+      fetchClients();
     } else {
       getOwnedDesigns();
     }
   }, []);
+
+  if (!designs || !clients) {
+    return <div>Loading...</div>;
+  }
+
+  console.log("lest clients", clients);
   return (
     <div>
       {isLoggedIn && user.status === "admin" && (
-        <>
-          <NavLink to={"/Designs/create"}>Create Desgins</NavLink>
-        </>
+        <div className="btn">
+          <Link to={"/Designs/create"}>Create Desgins </Link>
+        </div>
       )}
 
-      {designs.map((design) => {
+      {clients.map((client) => {
         return (
-          <div key={design._id}>
-            <Link to={design._id}>{design.name}</Link>
+          <div>
+            <h2 key={client.username}> {client.username}</h2>
+            {designs.map((design) => {
+              if (design.usedBy.includes(client._id)) {
+                return (
+                  <Link key={design._id} to={design._id}>
+                    <div className="btn">{design.name}</div>
+                  </Link>
+                );
+              }
+            })}
           </div>
         );
       })}
+
+      {user.status != "admin" &&
+        designs.map((design) => {
+          return (
+            <Link key={design._id} to={design._id}>
+              <div className="btn">{design.name}</div>
+            </Link>
+          );
+        })}
     </div>
   );
 };

@@ -162,11 +162,15 @@ const OneDesign = () => {
             <label htmlFor="picture">Picture:</label>
             <input type="file" onChange={handleFile} />
           </div>
-          <button onClick={generateDesign}>Generate the image</button>
-          <a href={toDownload} Name="btn">
+          <button className="btn" onClick={generateDesign}>
+            Generate the image
+          </button>
+          <a className="btn" href={toDownload} Name="btn">
             Downlaod
           </a>
-          <button onClick={handleDelete}>Delete</button>
+          <button className="btn" onClick={handleDelete}>
+            Delete
+          </button>
         </form>
       </div>
     </div>
