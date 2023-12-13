@@ -3,7 +3,7 @@ import axios from "axios";
 import "./AuthForm.css";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const AuthForm = ({ mode }) => {
   const { user, authenticateUser, isLoggedIn } = useContext(AuthContext);
@@ -13,7 +13,6 @@ const AuthForm = ({ mode }) => {
   const [error, setError] = useState("");
   const [response, setResponse] = useState("");
   const navigate = useNavigate();
-  console.log("bonjour le progile", mode, user);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -41,6 +40,12 @@ const AuthForm = ({ mode }) => {
           }
         );
         console.log(response.statusText);
+        setResponse(response.statusText);
+      } else if (mode === "Reset") {
+        console.log("shloud reset ", username);
+        const response = await axios.post(`${BACKEND_URL}/api/auth/reset`, {
+          username,
+        });
         setResponse(response.statusText);
       } else {
         const response = await axios.post(
@@ -94,7 +99,7 @@ const AuthForm = ({ mode }) => {
           </div>
         )}
 
-        {mode !== "Create" ? (
+        {mode !== "Create" && mode !== "Reset" && (
           <div>
             <label className="title" htmlFor="password">
               Password:{" "}
@@ -105,7 +110,12 @@ const AuthForm = ({ mode }) => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-        ) : null}
+        )}
+        {mode === "Log in" && (
+          <div>
+            <NavLink to={"/auth/reset"}>Reset password</NavLink>
+          </div>
+        )}
 
         <p style={{ color: "red" }}>{error}</p>
         <p style={{ color: "green" }}>{response}</p>
