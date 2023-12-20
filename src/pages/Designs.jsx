@@ -81,13 +81,14 @@ const Designs = () => {
                       <div className="btn">{design.FigmaName}</div>
                     </Link>
                   );
-                } else {
-                  return (
-                    <Link key={design._id} to={design._id}>
-                      <div className="btn">{design.FigmaName}</div>
-                    </Link>
-                  );
                 }
+                // } else {
+                //   return (
+                //     <Link key={design._id} to={design._id}>
+                //       <div className="btn">{design.FigmaName}</div>
+                //     </Link>
+                //   );
+                // }
               })}
             </div>
           );

@@ -36,16 +36,13 @@ const Navbar = () => {
             <li>
               <NavLink to={"/Clients"}>Clients</NavLink>
             </li>
-            <li>
-              <NavLink to={"/Designs"}>Designs</NavLink>
-            </li>
-            {/* <li>
-              <NavLink to={"/auth/signup"}>Create User</NavLink>
-            </li> */}
           </>
         )}
         {isLoggedIn && (
           <>
+            <li>
+              <NavLink to={"/Designs"}>Designs</NavLink>
+            </li>
             <li>
               <button onClick={logout}>Logout</button>
             </li>
