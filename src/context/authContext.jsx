@@ -24,7 +24,6 @@ const AuthContextWrapper = ({ children }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-console.log("bonjour le context", response.data)
 
         // Set the received user infos to my user state
         // Set is logged in to true.

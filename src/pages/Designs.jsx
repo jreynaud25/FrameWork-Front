@@ -60,7 +60,7 @@ const Designs = () => {
     return <div>Loading...</div>;
   }
 
-  console.log("lest clients", clients);
+  //  console.log("lest clients", clients);
   return (
     <div>
       {isLoggedIn && user.status === "admin" && (
@@ -69,28 +69,35 @@ const Designs = () => {
         </div>
       )}
 
-      {clients.map((client) => {
-        return (
-          <div>
-            <h2 key={client.username}> {client.username}</h2>
-            {designs.map((design) => {
-              if (design.usedBy.includes(client._id)) {
-                return (
-                  <Link key={design._id} to={design._id}>
-                    <div className="btn">{design.name}</div>
-                  </Link>
-                );
-              }
-            })}
-          </div>
-        );
-      })}
+      {user.status === "admin" &&
+        clients.map((client) => {
+          return (
+            <div>
+              <h2 key={client.username}> {client.username}</h2>
+              {designs.map((design) => {
+                if (design.usedBy.includes(client._id)) {
+                  return (
+                    <Link key={design._id} to={design._id}>
+                      <div className="btn">{design.FigmaName}</div>
+                    </Link>
+                  );
+                } else {
+                  return (
+                    <Link key={design._id} to={design._id}>
+                      <div className="btn">{design.FigmaName}</div>
+                    </Link>
+                  );
+                }
+              })}
+            </div>
+          );
+        })}
 
       {user.status != "admin" &&
         designs.map((design) => {
           return (
             <Link key={design._id} to={design._id}>
-              <div className="btn">{design.name}</div>
+              <div className="btn">{design.FigmaName}</div>
             </Link>
           );
         })}
