@@ -66,7 +66,10 @@ const OneDesign = () => {
   const generateDesign = async (event) => {
     event.preventDefault();
     const fd = new FormData();
-    fd.append("newText", newText);
+    console.log("Je vais generer avec", newText);
+
+    console.log("the type of ", typeof newText);
+    fd.append("newText", JSON.stringify(newText));
     // fd.append("picture", picture);
     pictures.forEach((picture, index) => {
       //console.log(picture.file);
@@ -83,6 +86,11 @@ const OneDesign = () => {
           // setDesign(res.data);
           console.log("reponse from generating ", res.data);
           dowloadDesign(true);
+
+          const inputFile = document.getElementById("fileInput"); // Add an ID to your input element
+          if (inputFile) {
+            inputFile.value = ""; // Set the value to an empty string
+          }
         });
     } catch (error) {
       console.log(error);
@@ -154,18 +162,18 @@ const OneDesign = () => {
           {design.variables.map((element, index) => {
             return (
               <label key={index}>
-                {element.name}
-                {/* <input
-                  value={newText[index].valuesByMode["250:0"]}
+                {element.name.split(" - ")[1]}
+                <input
+                  value={newText[index].valuesByMode}
                   type={newText[index].type}
                   onChange={(val) => {
                     console.log("salut la val et l'index", index);
                     let temp = [...newText];
-                    temp[index] = val.target.value;
+                    temp[index].valuesByMode = val.target.value;
                     setNewText(temp);
-                    console.log(temp);
+                    //console.log(temp);
                   }}
-                /> */}
+                />
               </label>
             );
           })}
@@ -187,8 +195,12 @@ const OneDesign = () => {
                 uniqueImageNames.add(element.name); // Add the name to the set
                 return (
                   <div key={element.name}>
-                    {element.name}{" "}
-                    <input type="file" onChange={handleFileWithInfo} />
+                    {element.name.split(" - ")[1]}
+                    <input
+                      id="fileInput"
+                      type="file"
+                      onChange={handleFileWithInfo}
+                    />
                   </div>
                 );
               }
