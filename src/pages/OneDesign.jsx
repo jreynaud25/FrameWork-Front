@@ -12,11 +12,11 @@ const OneDesign = () => {
   const [clients, setClients] = useState("");
   // const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
-
+  const uniqueImageNames = new Set();
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
-  const [picture, setPicture] = useState("");
+  const [pictures, setPictures] = useState([]);
 
   const { id } = useParams();
   const getDesign = async () => {
@@ -30,8 +30,8 @@ const OneDesign = () => {
         .then((res) => {
           setDesign(res.data);
           setClients(res.data.usedBy);
-          console.log("got the deisgn", res.data, res.data.usedBy);
-          setNewText(res.data.textValues);
+          console.log("got the deisgn", res.data, res.data.variables);
+          setNewText(res.data.variables);
         });
     } catch (error) {
       console.log("there is an error", error);
@@ -44,7 +44,7 @@ const OneDesign = () => {
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.figmaID}?ids=${design.figmaFrameID}&format=png`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${design.FigmaId}&format=png`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
@@ -66,9 +66,15 @@ const OneDesign = () => {
   const generateDesign = async (event) => {
     event.preventDefault();
     const fd = new FormData();
-    fd.append("newText", newText);
-    fd.append("picture", picture);
+    console.log("Je vais generer avec", newText);
 
+    console.log("the type of ", typeof newText);
+    fd.append("newText", JSON.stringify(newText));
+    // fd.append("picture", picture);
+    pictures.forEach((picture, index) => {
+      //console.log(picture.file);
+      fd.append("pictures", picture.file, picture.name);
+    });
     try {
       const res = await axios
         .patch(`${BACKEND_URL}/api/designs/${id}`, fd, {
@@ -80,15 +86,31 @@ const OneDesign = () => {
           // setDesign(res.data);
           console.log("reponse from generating ", res.data);
           dowloadDesign(true);
+
+          const inputFile = document.getElementById("fileInput"); // Add an ID to your input element
+          if (inputFile) {
+            inputFile.value = ""; // Set the value to an empty string
+          }
         });
     } catch (error) {
       console.log(error);
     }
   };
 
-  function handleFile(event) {
+  function handleFile(event, name) {
     console.log(event.target.files);
-    setPicture(event.target.files[0]);
+    console.log("can i get index", name);
+
+    const newPicture = {
+      name: name,
+      file: event.target.files[0],
+    };
+
+    // Add the new picture to the existing pictures array
+    setPictures((prevPictures) => [...prevPictures, newPicture]);
+  }
+  function handleArchive() {
+    console.log("Start archiving");
   }
   const handleDelete = async (event) => {
     console.log("Handle delete");
@@ -117,8 +139,9 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
-    console.log("bonjour le download design dans le useeffects");
-    dowloadDesign();
+    if (design) {
+      dowloadDesign();
+    }
   }, [design]);
 
   if (!design) {
@@ -127,27 +150,28 @@ const OneDesign = () => {
 
   return (
     <div>
-      <p>{design.name}</p>
+      <p>{design.FigmaName}</p>
       <div>
         {!toDownload ? (
           <div> Loading... </div>
         ) : (
-          <img src={toDownload} alt={design.name} width={300} />
+          <img src={toDownload} alt={design.FigmaName} width={300} />
         )}
 
         <form>
-          {design.textValues.map((element, index) => {
+          {design.variables.map((element, index) => {
             return (
               <label key={index}>
-                Champ numéro {index + 1}
+                {element.name.split(" - ")[1]}
                 <input
-                  value={newText[index]}
+                  value={newText[index].valuesByMode}
+                  type={newText[index].type}
                   onChange={(val) => {
                     console.log("salut la val et l'index", index);
                     let temp = [...newText];
-                    temp[index] = val.target.value;
+                    temp[index].valuesByMode = val.target.value;
                     setNewText(temp);
-                    console.log(temp);
+                    //console.log(temp);
                   }}
                 />
               </label>
@@ -156,17 +180,49 @@ const OneDesign = () => {
 
           <div>Useb by</div>
           {clients.map((client) => {
-            return <div>{client.username}</div>;
+            return <div key={client.username}>{client.username}</div>;
           })}
           <div>
             <label htmlFor="picture">Picture:</label>
-            <input type="file" onChange={handleFile} />
+
+            {design.images.map((element, index) => {
+              const handleFileWithInfo = (event) => {
+                handleFile(event, element.name);
+              };
+
+              // Check if the name is already displayed, if not, display it and add to the set
+              if (!uniqueImageNames.has(element.name)) {
+                uniqueImageNames.add(element.name); // Add the name to the set
+                return (
+                  <div key={element.name}>
+                    {element.name.split(" - ")[1]}
+                    <input
+                      id="fileInput"
+                      type="file"
+                      onChange={handleFileWithInfo}
+                    />
+                  </div>
+                );
+              }
+            })}
           </div>
-          <button onClick={generateDesign}>Generate the image</button>
-          <a href={toDownload} Name="btn">
-            Downlaod
-          </a>
-          <button onClick={handleDelete}>Delete</button>
+          <button className="btn" onClick={generateDesign}>
+            Generate the image
+          </button>
+          {toDownload && (
+            <a className="btn" href={toDownload}>
+              Downlaod
+            </a>
+          )}
+
+          {toDownload && (
+            <button className="btn" onClick={handleArchive}>
+              Archive
+            </button>
+          )}
+          <button className="btn" onClick={handleDelete}>
+            Delete
+          </button>
         </form>
       </div>
     </div>

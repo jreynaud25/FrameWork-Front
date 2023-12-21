@@ -26,11 +26,13 @@ function App() {
             <Route path="/designs" element={<Designs />}></Route>
             <Route path="/designs/create" element={<CreateDesign />} />
             <Route path="/designs/:id" element={<OneDesign />} />
+            <Route path="/profile" element={<AuthForm mode="Update" />}></Route>
           </Route>
 
           <Route path="/auth">
             <Route path="login" element={<AuthForm mode="Log in" />} />
             <Route path="create" element={<AuthForm mode="Create" />} />
+            <Route path="reset" element={<AuthForm mode="Reset" />}></Route>
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>

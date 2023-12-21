@@ -22,13 +22,13 @@ const Navbar = () => {
         </li> */}
         {!isLoggedIn && (
           <>
-            {/* <li>
+            <li>
               <NavLink to={"/auth/login"}>Log in</NavLink>
-            </li> */}
+            </li>
           </>
         )}
         <li>
-          <NavLink to={"/Designs"}>{user?.username}</NavLink>
+          <NavLink to={"/profile"}>{user?.username}</NavLink>
         </li>
 
         {isLoggedIn && user.status === "admin" && (
@@ -36,16 +36,13 @@ const Navbar = () => {
             <li>
               <NavLink to={"/Clients"}>Clients</NavLink>
             </li>
-            <li>
-              <NavLink to={"/Designs"}>Designs</NavLink>
-            </li>
-            {/* <li>
-              <NavLink to={"/auth/signup"}>Create User</NavLink>
-            </li> */}
           </>
         )}
         {isLoggedIn && (
           <>
+            <li>
+              <NavLink to={"/Designs"}>Designs</NavLink>
+            </li>
             <li>
               <button onClick={logout}>Logout</button>
             </li>

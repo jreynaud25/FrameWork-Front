@@ -148,10 +148,12 @@ const CreateDesign = () => {
               ></input>
             ))}
         </div>
-        <button>Create a design</button>
+        <button className="btn">Create a design</button>
       </form>
 
-      <NavLink to={"/designs"}>Cancel</NavLink>
+      <NavLink className={"btn"} to={"/designs"}>
+        Cancel
+      </NavLink>
     </div>
   );
 };
