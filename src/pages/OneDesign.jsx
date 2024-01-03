@@ -10,6 +10,8 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 const OneDesign = () => {
   const [design, setDesign] = useState();
   const [clients, setClients] = useState("");
+  const [selectedTemplate, setselectedTemplate] = useState({});
+  const [selectedFrame, setSelectedFrame] = useState({});
   // const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
   const uniqueImageNames = new Set();
@@ -30,6 +32,8 @@ const OneDesign = () => {
         .then((res) => {
           setDesign(res.data);
           setClients(res.data.usedBy);
+          setselectedTemplate(res.data.sections[0]);
+          setSelectedFrame(res.data.sections[0].frames[0]);
           console.log("got the deisgn", res.data, res.data.variables);
           setNewText(res.data.variables);
         });
@@ -40,11 +44,13 @@ const OneDesign = () => {
   };
 
   //Download the design
-  const dowloadDesign = async (setChange) => {
+  const dowloadDesign = async (idToDownload, setChange) => {
+    console.log("Starting the download with params", idToDownload, setChange);
+    setTodownload(null);
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${design.FigmaId}&format=png`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
@@ -70,9 +76,7 @@ const OneDesign = () => {
 
     console.log("the type of ", typeof newText);
     fd.append("newText", JSON.stringify(newText));
-    // fd.append("picture", picture);
     pictures.forEach((picture, index) => {
-      //console.log(picture.file);
       fd.append("pictures", picture.file, picture.name);
     });
     try {
@@ -85,7 +89,7 @@ const OneDesign = () => {
         .then((res) => {
           // setDesign(res.data);
           console.log("reponse from generating ", res.data);
-          dowloadDesign(true);
+          //dowloadDesign(true);
 
           const inputFile = document.getElementById("fileInput"); // Add an ID to your input element
           if (inputFile) {
@@ -139,10 +143,14 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
+    // console.log(
+    //   ` shloud download   https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${selectedTemplate.id}&format=png`
+    // );
+
     if (design) {
-      dowloadDesign();
+      //  dowloadDesign(selectedTemplate.id);
     }
-  }, [design]);
+  }, [selectedTemplate]);
 
   if (!design) {
     return <div>Loading...</div>;
@@ -157,9 +165,30 @@ const OneDesign = () => {
         ) : (
           <img src={toDownload} alt={design.FigmaName} width={300} />
         )}
+        <label htmlFor="selectedTemplate">Template</label>
 
         <form>
-          {design.variables.map((element, index) => {
+          <select
+            value={selectedTemplate.name}
+            onChange={(e) => {
+              setTodownload(null);
+              const selectedSectionName = e.target.value;
+              const selectedSection = design.sections.find(
+                (section) => section.name === selectedSectionName
+              );
+              console.log(selectedSection);
+              setselectedTemplate(selectedSection);
+            }}
+          >
+            {design.sections.map((section, index) => {
+              return (
+                <option key={section.name} value={section.name}>
+                  {section.name}
+                </option>
+              );
+            })}
+          </select>
+          {/* {design.variables.map((element, index) => {
             return (
               <label key={index}>
                 {element.name.split(" - ")[1]}
@@ -176,7 +205,7 @@ const OneDesign = () => {
                 />
               </label>
             );
-          })}
+          })} */}
 
           <div>Useb by</div>
           {clients.map((client) => {
@@ -209,6 +238,42 @@ const OneDesign = () => {
           <button className="btn" onClick={generateDesign}>
             Generate the image
           </button>
+
+          <label htmlFor="selectDownload">Select Download</label>
+          {console.log("checking the selected frame", selectedFrame)}
+          <select
+            value={selectedFrame.frameName}
+            onChange={(e) => {
+              setTodownload(null);
+              const selectedFrameName = e.target.value;
+              const selectedFrameToFind = selectedTemplate.frames.find(
+                (frame) => frame.frameName === selectedFrameName
+              );
+              console.log("la selected frame", selectedFrameToFind);
+              setSelectedFrame(selectedFrameToFind);
+            }}
+          >
+            {selectedTemplate.frames.map((frame, index) => {
+              return (
+                <option key={frame.frameName} value={frame.frameName}>
+                  {frame.frameName}
+                </option>
+              );
+            })}
+          </select>
+          <br />
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("bonjour le click", selectedFrame.frameId);
+              dowloadDesign(selectedFrame.frameId);
+            }}
+          >
+            Download {selectedFrame.frameName}
+          </button>
+
+          <br />
           {toDownload && (
             <a className="btn" href={toDownload}>
               Downlaod
