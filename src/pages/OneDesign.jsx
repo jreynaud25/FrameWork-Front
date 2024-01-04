@@ -143,10 +143,6 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
-    // console.log(
-    //   ` shloud download   https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${selectedTemplate.id}&format=png`
-    // );
-
     if (design) {
       //  dowloadDesign(selectedTemplate.id);
     }
@@ -188,24 +184,31 @@ const OneDesign = () => {
               );
             })}
           </select>
-          {/* {design.variables.map((element, index) => {
-            return (
-              <label key={index}>
-                {element.name.split(" - ")[1]}
-                <input
-                  value={newText[index].valuesByMode}
-                  type={newText[index].type}
-                  onChange={(val) => {
-                    console.log("salut la val et l'index", index);
-                    let temp = [...newText];
-                    temp[index].valuesByMode = val.target.value;
-                    setNewText(temp);
-                    //console.log(temp);
-                  }}
-                />
-              </label>
-            );
-          })} */}
+          {design.variables.map((element, index) => {
+            // console.log("lemement", element.name);
+
+            // console.log("le template", selectedTemplate.name);
+            if (element.name.startsWith(selectedTemplate.name)) {
+              console.log("salut on va afficher");
+
+              return (
+                <label key={index}>
+                  {element.name.split(" - ")[1]}
+                  <input
+                    value={newText[index].valuesByMode}
+                    type={newText[index].type}
+                    onChange={(val) => {
+                      console.log("salut la val et l'index", index);
+                      let temp = [...newText];
+                      temp[index].valuesByMode = val.target.value;
+                      setNewText(temp);
+                      //console.log(temp);
+                    }}
+                  />
+                </label>
+              );
+            }
+          })}
 
           <div>Useb by</div>
           {clients.map((client) => {
