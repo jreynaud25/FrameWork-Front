@@ -8,15 +8,17 @@ WORKDIR /app
  
 # Copy the package.json file.
 COPY package.json .
- 
+# COPY package-lock.json .
 # Install application dependencies.
-RUN npm ci
+
+
 
 # Copy the rest of the application files.
 COPY . .
- 
+RUN npm install
 # Expose the port.
-EXPOSE 3000
+EXPOSE 4321
  
+ENV PATH /app/node_modules/.bin:$PATH
 # Run the application.
 CMD npm run dev

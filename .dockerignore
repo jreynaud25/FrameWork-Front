@@ -1,5 +1,7 @@
 node_modules
+old_node_modules
 Dockerfile
 .git
 .gitignore
 .dockerignore
+.DS_Store
