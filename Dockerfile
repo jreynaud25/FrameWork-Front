@@ -7,17 +7,16 @@ FROM node:latest
 WORKDIR /app
  
 # Copy the package.json file.
-COPY package.json .
-# COPY package-lock.json .
+COPY package.json package-lock.json ./
 # Install application dependencies.
 
-
+RUN npm ci
 
 # Copy the rest of the application files.
 COPY . .
-RUN npm install
+
 # Expose the port.
-EXPOSE 4321
+EXPOSE 5173
  
 ENV PATH /app/node_modules/.bin:$PATH
 # Run the application.
