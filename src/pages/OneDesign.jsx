@@ -17,6 +17,8 @@ const OneDesign = () => {
   const uniqueImageNames = new Set();
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
+  const [templateImg, setTemplateImg] = useState(false);
+  const [templateReady, setTemplateReady] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [pictures, setPictures] = useState([]);
 
@@ -34,7 +36,7 @@ const OneDesign = () => {
           setClients(res.data.usedBy);
           setselectedTemplate(res.data.sections[0]);
           setSelectedFrame(res.data.sections[0].frames[0]);
-          console.log("got the deisgn", res.data, res.data.variables);
+          //console.log("got the deisgn", res.data, res.data.variables);
           setNewText(res.data.variables);
         });
     } catch (error) {
@@ -45,7 +47,7 @@ const OneDesign = () => {
 
   //Download the design
   const dowloadDesign = async (idToDownload, setChange) => {
-    console.log("Starting the download with params", idToDownload, setChange);
+    //console.log("Starting the download with params", idToDownload, setChange);
     setTodownload(null);
     try {
       const res = await axios
@@ -62,6 +64,27 @@ const OneDesign = () => {
           if (setChange) {
             setIsGenerated(true);
           }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Download the Template
+  const dowloadTemplate = async (idToDownload, setChange) => {
+    try {
+      const res = await axios
+        .get(
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png`,
+          {
+            headers: {
+              "X-Figma-Token": FIGMATOKEN,
+            },
+          }
+        )
+        .then((res) => {
+          setTemplateImg(res.data.images[Object.keys(res.data.images)[0]]);
+          setTemplateReady(true);
         });
     } catch (error) {
       console.log(error);
@@ -120,6 +143,12 @@ const OneDesign = () => {
     console.log("Handle delete");
     event.preventDefault();
 
+    const userConfirmed = window.confirm("Are you sure you want to delete?");
+
+    if (!userConfirmed) {
+      // User canceled the deletion
+      return;
+    } //Confirmation
     try {
       const res = await axios
         .delete(`${BACKEND_URL}/api/designs/${id}`, {
@@ -143,9 +172,8 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
-    if (design) {
-      //  dowloadDesign(selectedTemplate.id);
-    }
+    setTemplateReady(false);
+    dowloadTemplate(selectedTemplate.id);
   }, [selectedTemplate]);
 
   if (!design) {
@@ -156,12 +184,11 @@ const OneDesign = () => {
     <div>
       <p>{design.FigmaName}</p>
       <div>
-        {!toDownload ? (
+        {!templateReady ? (
           <div> Loading... </div>
         ) : (
-          <img src={toDownload} alt={design.FigmaName} width={300} />
+          <img src={templateImg} alt={design.FigmaName} width={300} />
         )}
-        <label htmlFor="selectedTemplate">Template</label>
 
         <form>
           <select
@@ -172,7 +199,7 @@ const OneDesign = () => {
               const selectedSection = design.sections.find(
                 (section) => section.name === selectedSectionName
               );
-              console.log(selectedSection);
+              // console.log(selectedSection);
               setselectedTemplate(selectedSection);
             }}
           >
@@ -189,7 +216,7 @@ const OneDesign = () => {
 
             // console.log("le template", selectedTemplate.name);
             if (element.name.startsWith(selectedTemplate.name)) {
-              console.log("salut on va afficher");
+              //console.log("salut on va afficher");
 
               return (
                 <label key={index}>
@@ -243,7 +270,6 @@ const OneDesign = () => {
           </button>
 
           <label htmlFor="selectDownload">Select Download</label>
-          {console.log("checking the selected frame", selectedFrame)}
           <select
             value={selectedFrame.frameName}
             onChange={(e) => {
