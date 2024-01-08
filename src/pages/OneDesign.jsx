@@ -10,11 +10,15 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 const OneDesign = () => {
   const [design, setDesign] = useState();
   const [clients, setClients] = useState("");
+  const [selectedTemplate, setselectedTemplate] = useState({});
+  const [selectedFrame, setSelectedFrame] = useState({});
   // const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
   const uniqueImageNames = new Set();
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
+  const [templateImg, setTemplateImg] = useState(false);
+  const [templateReady, setTemplateReady] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [pictures, setPictures] = useState([]);
 
@@ -30,7 +34,9 @@ const OneDesign = () => {
         .then((res) => {
           setDesign(res.data);
           setClients(res.data.usedBy);
-          console.log("got the deisgn", res.data, res.data.variables);
+          setselectedTemplate(res.data.sections[0]);
+          setSelectedFrame(res.data.sections[0].frames[0]);
+          //console.log("got the deisgn", res.data, res.data.variables);
           setNewText(res.data.variables);
         });
     } catch (error) {
@@ -40,11 +46,13 @@ const OneDesign = () => {
   };
 
   //Download the design
-  const dowloadDesign = async (setChange) => {
+  const dowloadDesign = async (idToDownload, setChange) => {
+    //console.log("Starting the download with params", idToDownload, setChange);
+    setTodownload(null);
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${design.FigmaId}&format=png`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
@@ -62,6 +70,27 @@ const OneDesign = () => {
     }
   };
 
+  //Download the Template
+  const dowloadTemplate = async (idToDownload, setChange) => {
+    try {
+      const res = await axios
+        .get(
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png`,
+          {
+            headers: {
+              "X-Figma-Token": FIGMATOKEN,
+            },
+          }
+        )
+        .then((res) => {
+          setTemplateImg(res.data.images[Object.keys(res.data.images)[0]]);
+          setTemplateReady(true);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //Generate the new design
   const generateDesign = async (event) => {
     event.preventDefault();
@@ -70,9 +99,7 @@ const OneDesign = () => {
 
     console.log("the type of ", typeof newText);
     fd.append("newText", JSON.stringify(newText));
-    // fd.append("picture", picture);
     pictures.forEach((picture, index) => {
-      //console.log(picture.file);
       fd.append("pictures", picture.file, picture.name);
     });
     try {
@@ -85,7 +112,7 @@ const OneDesign = () => {
         .then((res) => {
           // setDesign(res.data);
           console.log("reponse from generating ", res.data);
-          dowloadDesign(true);
+          //dowloadDesign(true);
 
           const inputFile = document.getElementById("fileInput"); // Add an ID to your input element
           if (inputFile) {
@@ -116,6 +143,12 @@ const OneDesign = () => {
     console.log("Handle delete");
     event.preventDefault();
 
+    const userConfirmed = window.confirm("Are you sure you want to delete?");
+
+    if (!userConfirmed) {
+      // User canceled the deletion
+      return;
+    } //Confirmation
     try {
       const res = await axios
         .delete(`${BACKEND_URL}/api/designs/${id}`, {
@@ -139,10 +172,9 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
-    if (design) {
-      dowloadDesign();
-    }
-  }, [design]);
+    setTemplateReady(false);
+    dowloadTemplate(selectedTemplate.id);
+  }, [selectedTemplate]);
 
   if (!design) {
     return <div>Loading...</div>;
@@ -152,30 +184,57 @@ const OneDesign = () => {
     <div>
       <p>{design.FigmaName}</p>
       <div>
-        {!toDownload ? (
+        {!templateReady ? (
           <div> Loading... </div>
         ) : (
-          <img src={toDownload} alt={design.FigmaName} width={300} />
+          <img src={templateImg} alt={design.FigmaName} width={300} />
         )}
 
         <form>
+          <select
+            value={selectedTemplate.name}
+            onChange={(e) => {
+              setTodownload(null);
+              const selectedSectionName = e.target.value;
+              const selectedSection = design.sections.find(
+                (section) => section.name === selectedSectionName
+              );
+              // console.log(selectedSection);
+              setselectedTemplate(selectedSection);
+            }}
+          >
+            {design.sections.map((section, index) => {
+              return (
+                <option key={section.name} value={section.name}>
+                  {section.name}
+                </option>
+              );
+            })}
+          </select>
           {design.variables.map((element, index) => {
-            return (
-              <label key={index}>
-                {element.name.split(" - ")[1]}
-                <input
-                  value={newText[index].valuesByMode}
-                  type={newText[index].type}
-                  onChange={(val) => {
-                    console.log("salut la val et l'index", index);
-                    let temp = [...newText];
-                    temp[index].valuesByMode = val.target.value;
-                    setNewText(temp);
-                    //console.log(temp);
-                  }}
-                />
-              </label>
-            );
+            // console.log("lemement", element.name);
+
+            // console.log("le template", selectedTemplate.name);
+            if (element.name.startsWith(selectedTemplate.name)) {
+              //console.log("salut on va afficher");
+
+              return (
+                <label key={index}>
+                  {element.name.split(" - ")[1]}
+                  <input
+                    value={newText[index].valuesByMode}
+                    type={newText[index].type}
+                    onChange={(val) => {
+                      console.log("salut la val et l'index", index);
+                      let temp = [...newText];
+                      temp[index].valuesByMode = val.target.value;
+                      setNewText(temp);
+                      //console.log(temp);
+                    }}
+                  />
+                </label>
+              );
+            }
           })}
 
           <div>Useb by</div>
@@ -209,6 +268,41 @@ const OneDesign = () => {
           <button className="btn" onClick={generateDesign}>
             Generate the image
           </button>
+
+          <label htmlFor="selectDownload">Select Download</label>
+          <select
+            value={selectedFrame.frameName}
+            onChange={(e) => {
+              setTodownload(null);
+              const selectedFrameName = e.target.value;
+              const selectedFrameToFind = selectedTemplate.frames.find(
+                (frame) => frame.frameName === selectedFrameName
+              );
+              console.log("la selected frame", selectedFrameToFind);
+              setSelectedFrame(selectedFrameToFind);
+            }}
+          >
+            {selectedTemplate.frames.map((frame, index) => {
+              return (
+                <option key={frame.frameName} value={frame.frameName}>
+                  {frame.frameName}
+                </option>
+              );
+            })}
+          </select>
+          <br />
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("bonjour le click", selectedFrame.frameId);
+              dowloadDesign(selectedFrame.frameId);
+            }}
+          >
+            Download {selectedFrame.frameName}
+          </button>
+
+          <br />
           {toDownload && (
             <a className="btn" href={toDownload}>
               Downlaod
