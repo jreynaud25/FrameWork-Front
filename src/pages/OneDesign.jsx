@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 // import { AuthContext } from "../context/authContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
@@ -21,6 +21,7 @@ const OneDesign = () => {
   const [templateReady, setTemplateReady] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [pictures, setPictures] = useState([]);
+  const [scale, setScale] = useState(1);
 
   const { id } = useParams();
   const getDesign = async () => {
@@ -52,7 +53,7 @@ const OneDesign = () => {
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
@@ -75,7 +76,7 @@ const OneDesign = () => {
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
@@ -187,7 +188,12 @@ const OneDesign = () => {
         {!templateReady ? (
           <div> Loading... </div>
         ) : (
-          <img src={templateImg} alt={design.FigmaName} width={300} />
+          <>
+            <img src={templateImg} alt={design.FigmaName} width={300} />
+            <Link to={templateImg}>
+              <button>Download</button>
+            </Link>
+          </>
         )}
 
         <form>
@@ -250,7 +256,10 @@ const OneDesign = () => {
               };
 
               // Check if the name is already displayed, if not, display it and add to the set
-              if (!uniqueImageNames.has(element.name)) {
+              if (
+                !uniqueImageNames.has(element.name) &&
+                element.name.startsWith(selectedTemplate.name)
+              ) {
                 uniqueImageNames.add(element.name); // Add the name to the set
                 return (
                   <div key={element.name}>
@@ -265,6 +274,22 @@ const OneDesign = () => {
               }
             })}
           </div>
+
+          <div>
+            <label>
+              Scale between 0,01 and 4:
+              <input
+                type="number"
+                value={scale}
+                min="0.01"
+                max="4"
+                step="0.01"
+                onChange={() => setScale(parseFloat(event.target.value))}
+              />
+            </label>
+            <p>Selected Scale: {scale}</p>
+          </div>
+
           <button className="btn" onClick={generateDesign}>
             Generate the image
           </button>
