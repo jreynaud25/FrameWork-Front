@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
+import "./OneDesign.css";
 // import { AuthContext } from "../context/authContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
@@ -18,6 +19,7 @@ const OneDesign = () => {
   const [newText, setNewText] = useState([]);
   const [toDownload, setTodownload] = useState(false);
   const [templateImg, setTemplateImg] = useState(false);
+  const [svg, setSvg] = useState(null);
   const [templateReady, setTemplateReady] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [pictures, setPictures] = useState([]);
@@ -53,7 +55,7 @@ const OneDesign = () => {
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=${scale}`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
@@ -71,20 +73,39 @@ const OneDesign = () => {
     }
   };
 
+  //Function for the editing
+  const handleInputFocus = (svgId, hasFocus) => {
+    console.log(`Input at index ${svgId} gained focus`);
+    // Perform any additional actions
+    const element = document.getElementById(svgId);
+
+    console.log("element", element);
+    if (element) {
+      // Toggle the "active" class
+      element.classList.toggle("active", hasFocus);
+    }
+  };
+
   //Download the Template
   const dowloadTemplate = async (idToDownload, setChange) => {
+    console.log("Downloading the template with id", idToDownload);
     try {
       const res = await axios
         .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=${scale}&svg_include_id=true&svg_include_node_id=true`,
           {
             headers: {
               "X-Figma-Token": FIGMATOKEN,
             },
           }
         )
-        .then((res) => {
-          setTemplateImg(res.data.images[Object.keys(res.data.images)[0]]);
+        .then(async (res) => {
+          const svgData = await fetch(
+            res.data.images[Object.keys(res.data.images)[0]]
+          ).then((res) => res.text());
+          setSvg(svgData);
+
+          // setTemplateImg(res.data.images[Object.keys(res.data.images)[0]]);
           setTemplateReady(true);
         });
     } catch (error) {
@@ -137,9 +158,9 @@ const OneDesign = () => {
     // Add the new picture to the existing pictures array
     setPictures((prevPictures) => [...prevPictures, newPicture]);
   }
-  function handleArchive() {
-    console.log("Start archiving");
-  }
+  // function handleArchive() {
+  //   console.log("Start archiving");
+  // }
   const handleDelete = async (event) => {
     console.log("Handle delete");
     event.preventDefault();
@@ -174,28 +195,21 @@ const OneDesign = () => {
 
   useEffect(() => {
     setTemplateReady(false);
-    dowloadTemplate(selectedTemplate.id);
-  }, [selectedTemplate]);
+
+    // console.log("le selected template", selectedTemplate);
+    console.log("le selected frame", selectedFrame.frameId);
+    //dowloadTemplate(selectedTemplate.id);
+    dowloadTemplate(selectedFrame.frameId);
+  }, [selectedFrame]);
 
   if (!design) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div>
-      <p>{design.FigmaName}</p>
-      <div>
-        {!templateReady ? (
-          <div> Loading... </div>
-        ) : (
-          <>
-            <img src={templateImg} alt={design.FigmaName} width={300} />
-            <Link to={templateImg}>
-              <button>Download</button>
-            </Link>
-          </>
-        )}
-
+    <>
+      <h1>{design.FigmaName}</h1>
+      <div className="mainFrame">
         <form>
           <select
             value={selectedTemplate.name}
@@ -217,6 +231,29 @@ const OneDesign = () => {
               );
             })}
           </select>
+
+          <label htmlFor="selectDownload">Select Download</label>
+          <select
+            value={selectedFrame.frameName}
+            onChange={(e) => {
+              setTodownload(null);
+              const selectedFrameName = e.target.value;
+              const selectedFrameToFind = selectedTemplate.frames.find(
+                (frame) => frame.frameName === selectedFrameName
+              );
+              console.log("la selected frame", selectedFrameToFind);
+              setSelectedFrame(selectedFrameToFind);
+            }}
+          >
+            {selectedTemplate.frames.map((frame, index) => {
+              return (
+                <option key={frame.frameName} value={frame.frameName}>
+                  {frame.frameName}
+                </option>
+              );
+            })}
+          </select>
+
           {design.variables.map((element, index) => {
             // console.log("lemement", element.name);
 
@@ -230,6 +267,12 @@ const OneDesign = () => {
                   <input
                     value={newText[index].valuesByMode}
                     type={newText[index].type}
+                    onFocus={() =>
+                      handleInputFocus(element.name.split(" - ")[1])
+                    }
+                    onBlur={() =>
+                      handleInputFocus(element.name.split(" - ")[1], false)
+                    }
                     onChange={(val) => {
                       console.log("salut la val et l'index", index);
                       let temp = [...newText];
@@ -243,10 +286,10 @@ const OneDesign = () => {
             }
           })}
 
-          <div>Useb by</div>
+          {/* <div>Useb by</div>
           {clients.map((client) => {
             return <div key={client.username}>{client.username}</div>;
-          })}
+          })} */}
           <div>
             <label htmlFor="picture">Picture:</label>
 
@@ -294,30 +337,10 @@ const OneDesign = () => {
             Generate the image
           </button>
 
-          <label htmlFor="selectDownload">Select Download</label>
-          <select
-            value={selectedFrame.frameName}
-            onChange={(e) => {
-              setTodownload(null);
-              const selectedFrameName = e.target.value;
-              const selectedFrameToFind = selectedTemplate.frames.find(
-                (frame) => frame.frameName === selectedFrameName
-              );
-              console.log("la selected frame", selectedFrameToFind);
-              setSelectedFrame(selectedFrameToFind);
-            }}
-          >
-            {selectedTemplate.frames.map((frame, index) => {
-              return (
-                <option key={frame.frameName} value={frame.frameName}>
-                  {frame.frameName}
-                </option>
-              );
-            })}
-          </select>
           <br />
 
           <button
+            className="btn"
             onClick={(e) => {
               e.preventDefault();
               console.log("bonjour le click", selectedFrame.frameId);
@@ -334,17 +357,32 @@ const OneDesign = () => {
             </a>
           )}
 
-          {toDownload && (
+          {/* {toDownload && (
             <button className="btn" onClick={handleArchive}>
               Archive
             </button>
-          )}
+          )} */}
           <button className="btn" onClick={handleDelete}>
             Delete
           </button>
         </form>
+
+        <div className="preview">
+          {!templateReady ? (
+            <p> Loading... </p>
+          ) : (
+            <>
+              <div>
+                <div
+                  className="svgDiv"
+                  dangerouslySetInnerHTML={{ __html: svg }}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
