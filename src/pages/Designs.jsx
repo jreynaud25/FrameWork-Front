@@ -77,9 +77,19 @@ const Designs = () => {
               {designs.map((design) => {
                 if (design.usedBy.includes(client._id)) {
                   return (
-                    <Link key={design._id} to={design._id}>
-                      <div className="btn">{design.FigmaName}</div>
-                    </Link>
+                    <>
+                      <Link key={design._id} to={design._id}>
+                        <div className="btn">{design.FigmaName}</div>
+                      </Link>
+                      {design.sections.map((section) => {
+                        console.log("bonjours", section);
+                        return (
+                          <Link key={section._id} to={design._id}>
+                            <div className="btn">{section.name}</div>
+                          </Link>
+                        );
+                      })}
+                    </>
                   );
                 }
                 // } else {
@@ -97,9 +107,19 @@ const Designs = () => {
       {user.status != "admin" &&
         designs.map((design) => {
           return (
-            <Link key={design._id} to={design._id}>
-              <div className="btn">{design.FigmaName}</div>
-            </Link>
+            <>
+              <Link key={design._id} to={design._id}>
+                <div className="btn">{design.FigmaName}</div>
+              </Link>
+              {design.sections.map((section) => {
+                console.log("bonjours", section);
+                return (
+                  <Link key={section._id} to={design._id}>
+                    <div className="btn">{section.name}</div>
+                  </Link>
+                );
+              })}
+            </>
           );
         })}
     </div>
