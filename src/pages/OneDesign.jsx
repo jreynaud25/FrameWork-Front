@@ -85,7 +85,7 @@ const OneDesign = () => {
 
   //Function for the editing
   const handleInputFocus = (svgId, hasFocus) => {
-    console.log(`Input at index ${svgId} gained focus`);
+    // console.log(`Input at index ${svgId} gained focus`);
     // Perform any additional actions
     const element = document.getElementById(svgId);
 
@@ -247,7 +247,7 @@ const OneDesign = () => {
             })}
           </select>
 
-          <label htmlFor="selectDownload">Select Frame</label>
+          <label>Select Frame</label>
           <select
             value={selectedFrame.frameName}
             onChange={(e) => {
@@ -274,7 +274,11 @@ const OneDesign = () => {
           </select>
 
           {design.variables.map((element, index) => {
-            if (element.name.startsWith(selectedTemplate.name)) {
+            console.log(element.name, selectedFrame);
+            if (
+              element.name.toLowerCase().includes(selectedTemplate.name.toLowerCase()) &&
+              element.name.toLowerCase().includes(selectedFrame.frameName.toLowerCase())
+            ) {
               return (
                 <label key={index}>
                   {element.name.split(" - ")[1]}
@@ -304,14 +308,19 @@ const OneDesign = () => {
             <label htmlFor="picture">Picture:</label>
 
             {design.images.map((element, index) => {
+              // console.log("mapping images", element);
               const handleFileWithInfo = (event) => {
                 handleFile(event, element.name);
               };
 
               // Check if the name is already displayed, if not, display it and add to the set
               if (
-                !uniqueImageNames.has(element.name) &&
-                element.name.startsWith(selectedTemplate.name)
+                (!uniqueImageNames.has(element.name) &&
+                  element.name.toLowerCase().includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name
+                    .toLowerCase()
+                    .includes(selectedFrame.frameName.toLowerCase())) ||
+                element.name.toLowerCase().includes("All")
               ) {
                 uniqueImageNames.add(element.name); // Add the name to the set
                 return (
