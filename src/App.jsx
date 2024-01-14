@@ -26,6 +26,7 @@ function App() {
             <Route path="/designs" element={<Designs />}></Route>
             <Route path="/designs/create" element={<CreateDesign />} />
             <Route path="/designs/:id" element={<OneDesign />} />
+            <Route path="/designs/:id/:section" element={<OneDesign />} />
             <Route path="/profile" element={<AuthForm mode="Update" />}></Route>
           </Route>
 

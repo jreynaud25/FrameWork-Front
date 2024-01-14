@@ -18,14 +18,14 @@ const OneDesign = () => {
   const uniqueImageNames = new Set();
   const [newText, setNewText] = useState([]);
   // const [toDownload, setTodownload] = useState(false);
-  const [templateImg, setTemplateImg] = useState(false);
+  // const [templateImg, setTemplateImg] = useState(false);
   const [svg, setSvg] = useState(null);
   const [templateReady, setTemplateReady] = useState(false);
-  const [isGenerated, setIsGenerated] = useState(false);
+  // const [isGenerated, setIsGenerated] = useState(false);
   const [pictures, setPictures] = useState([]);
   const [scale, setScale] = useState(1);
 
-  const { id } = useParams();
+  const { id, section } = useParams();
   const getDesign = async () => {
     try {
       const res = await axios
@@ -37,8 +37,19 @@ const OneDesign = () => {
         .then((res) => {
           setDesign(res.data);
           setClients(res.data.usedBy);
-          setselectedTemplate(res.data.sections[0]);
-          setSelectedFrame(res.data.sections[0].frames[0]);
+          const sectionIndex = res.data.sections.findIndex(
+            (s) => s.name === section
+          );
+
+          if (sectionIndex !== -1) {
+            // If the section is found, use the found section
+            setselectedTemplate(res.data.sections[sectionIndex]);
+            setSelectedFrame(res.data.sections[sectionIndex].frames[0]);
+          } else {
+            // If the section is not found, use the first section as a fallback
+            setselectedTemplate(res.data.sections[0]);
+            setSelectedFrame(res.data.sections[0].frames[0]);
+          }
           //console.log("got the deisgn", res.data, res.data.variables);
           setNewText(res.data.variables);
         });
@@ -51,7 +62,6 @@ const OneDesign = () => {
   //Download the design
   const dowloadDesign = async (idToDownload, setChange) => {
     //console.log("Starting the download with params", idToDownload, setChange);
-    // setTodownload(null);
     try {
       const res = await axios
         .get(
@@ -63,20 +73,13 @@ const OneDesign = () => {
           }
         )
         .then((res) => {
-          // setTodownload(res.data.images[Object.keys(res.data.images)[0]]);
-
           const link = document.createElement("a");
           link.href = res.data.images[Object.keys(res.data.images)[0]];
           link.download = "downloaded_image.png";
-
           // Append the link to the body and trigger the download
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-
-          // if (setChange) {
-          //   setIsGenerated(true);
-          // }
         });
     } catch (error) {
       console.log(error);
@@ -85,20 +88,16 @@ const OneDesign = () => {
 
   //Function for the editing
   const handleInputFocus = (svgId, hasFocus) => {
-    // console.log(`Input at index ${svgId} gained focus`);
-    // Perform any additional actions
     const element = document.getElementById(svgId);
-
     console.log("element", element);
     if (element) {
-      // Toggle the "active" class
       element.classList.toggle("active", hasFocus);
     }
   };
 
   //Download the Template
   const dowloadTemplate = async (idToDownload, setChange) => {
-    console.log("Downloading the template with id", idToDownload);
+    // console.log("Downloading the template with id", idToDownload);
     try {
       const res = await axios
         .get(
@@ -114,8 +113,6 @@ const OneDesign = () => {
             res.data.images[Object.keys(res.data.images)[0]]
           ).then((res) => res.text());
           setSvg(svgData);
-
-          // setTemplateImg(res.data.images[Object.keys(res.data.images)[0]]);
           setTemplateReady(true);
         });
     } catch (error) {
@@ -143,17 +140,15 @@ const OneDesign = () => {
           },
         })
         .then((res) => {
-          // setDesign(res.data);
           console.log("reponse from generating ", res.data);
-          //dowloadDesign(true);
           setTimeout(() => {
             dowloadTemplate(selectedFrame.frameId);
-          }, 3000); // 10000 milliseconds = 10 seconds
+          }, 3000);
 
           //Resetting the input
           const inputFile = document.getElementById("fileInput");
           if (inputFile) {
-            inputFile.value = ""; // Set the value to an empty string
+            inputFile.value = ""; // Reseet the value as an empty string
           }
         });
     } catch (error) {
@@ -169,7 +164,6 @@ const OneDesign = () => {
       name: name,
       file: event.target.files[0],
     };
-
     // Add the new picture to the existing pictures array
     setPictures((prevPictures) => [...prevPictures, newPicture]);
   }
@@ -208,7 +202,7 @@ const OneDesign = () => {
 
   useEffect(() => {
     setTemplateReady(false);
-    console.log("le selected frame", selectedFrame.frameId);
+    // console.log("le selected frame", selectedFrame.frameId);
     dowloadTemplate(selectedFrame.frameId);
   }, [selectedFrame]);
 
@@ -274,10 +268,18 @@ const OneDesign = () => {
           </select>
 
           {design.variables.map((element, index) => {
-            console.log(element.name, selectedFrame);
+            //console.log(element.name, selectedFrame);
             if (
-              element.name.toLowerCase().includes(selectedTemplate.name.toLowerCase()) &&
-              element.name.toLowerCase().includes(selectedFrame.frameName.toLowerCase())
+              (element.name
+                .toLowerCase()
+                .includes(selectedTemplate.name.toLowerCase()) &&
+                element.name
+                  .toLowerCase()
+                  .includes(selectedFrame.frameName.toLowerCase())) ||
+              (element.name
+                .toLowerCase()
+                .includes(selectedTemplate.name.toLowerCase()) &&
+                element.name.toLowerCase().includes("all"))
             ) {
               return (
                 <label key={index}>
@@ -316,11 +318,16 @@ const OneDesign = () => {
               // Check if the name is already displayed, if not, display it and add to the set
               if (
                 (!uniqueImageNames.has(element.name) &&
-                  element.name.toLowerCase().includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name
+                    .toLowerCase()
+                    .includes(selectedTemplate.name.toLowerCase()) &&
                   element.name
                     .toLowerCase()
                     .includes(selectedFrame.frameName.toLowerCase())) ||
-                element.name.toLowerCase().includes("All")
+                (element.name
+                  .toLowerCase()
+                  .includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name.toLowerCase().includes("all"))
               ) {
                 uniqueImageNames.add(element.name); // Add the name to the set
                 return (

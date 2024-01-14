@@ -82,9 +82,12 @@ const Designs = () => {
                         <div className="btn">{design.FigmaName}</div>
                       </Link>
                       {design.sections.map((section) => {
-                        console.log("bonjours", section);
+                        //console.log("bonjours", section);
                         return (
-                          <Link key={section._id} to={design._id}>
+                          <Link
+                            key={section._id}
+                            to={`${design._id}/${section.name}`}
+                          >
                             <div className="btn">{section.name}</div>
                           </Link>
                         );
