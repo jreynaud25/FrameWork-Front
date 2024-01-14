@@ -20,6 +20,13 @@ const Clients = () => {
   }, []);
 
   const handleDelete = async (id) => {
+    const userConfirmed = window.confirm("Are you sure you want to delete?");
+
+    if (!userConfirmed) {
+      // User canceled the deletion
+      return;
+    } //Confirmation
+
     console.log("should delete client with id:", id);
     try {
       const response = await axios.delete(`${BACKEND_URL}/api/client/${id}`, {
@@ -51,11 +58,9 @@ const Clients = () => {
         })}
       </div>
       <div>
-        
-          <NavLink to={"/auth/create"}>
-            <button className="btn">Ajouter Client </button>
-          </NavLink>
-        
+        <NavLink to={"/auth/create"}>
+          <button className="btn">Ajouter Client </button>
+        </NavLink>
       </div>
     </div>
   );
