@@ -276,8 +276,8 @@ const OneDesign = () => {
           {design.variables.map((element, index) => {
             console.log(element.name, selectedFrame);
             if (
-              element.name.startsWith(selectedTemplate.name) &&
-              element.name.includes(selectedFrame.frameName)
+              element.name.toLowerCase().includes(selectedTemplate.name.toLowerCase()) &&
+              element.name.toLowerCase().includes(selectedFrame.frameName.toLowerCase())
             ) {
               return (
                 <label key={index}>
@@ -308,7 +308,7 @@ const OneDesign = () => {
             <label htmlFor="picture">Picture:</label>
 
             {design.images.map((element, index) => {
-             // console.log("mapping images", element);
+              // console.log("mapping images", element);
               const handleFileWithInfo = (event) => {
                 handleFile(event, element.name);
               };
@@ -316,9 +316,11 @@ const OneDesign = () => {
               // Check if the name is already displayed, if not, display it and add to the set
               if (
                 (!uniqueImageNames.has(element.name) &&
-                  element.name.startsWith(selectedTemplate.name) &&
-                  element.name.includes(selectedFrame.frameName)) ||
-                element.name.includes("All")
+                  element.name.toLowerCase().includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name
+                    .toLowerCase()
+                    .includes(selectedFrame.frameName.toLowerCase())) ||
+                element.name.toLowerCase().includes("All")
               ) {
                 uniqueImageNames.add(element.name); // Add the name to the set
                 return (
