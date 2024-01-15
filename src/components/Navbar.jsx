@@ -3,7 +3,8 @@ import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
-
+const FRONTEND_URL =
+  import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
 const Navbar = () => {
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   //console.log(user);
@@ -13,13 +14,11 @@ const Navbar = () => {
   };
   return (
     <nav className="Navbar">
-      <NavLink to={"/"}>
-        <h1>Framework.</h1>
-      </NavLink>
+      <button onClick={() => (window.location.href = FRONTEND_URL)}>
+        {" "}
+        Framework.
+      </button>
       <ul>
-        {/* <li>
-          <NavLink to={"/"}>Home</NavLink>
-        </li> */}
         {!isLoggedIn && (
           <>
             <li>
