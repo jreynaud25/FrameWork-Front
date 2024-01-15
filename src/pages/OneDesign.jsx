@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import "./OneDesign.css";
-
+import { AuthContext } from "../context/authContext";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 
 //Retriving the design
 const OneDesign = () => {
   const [design, setDesign] = useState();
-  // const [clients, setClients] = useState("");
+  const [client, setClient] = useState("");
   const [selectedTemplate, setselectedTemplate] = useState({});
   const [selectedFrame, setSelectedFrame] = useState({});
   const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
@@ -19,7 +19,7 @@ const OneDesign = () => {
   const [templateReady, setTemplateReady] = useState(false);
   const [pictures, setPictures] = useState([]);
   const [scale, setScale] = useState(1);
-
+  const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const { id, section } = useParams();
 
   //-------------! Function to retrive datas !-------------
@@ -34,7 +34,7 @@ const OneDesign = () => {
         })
         .then((res) => {
           setDesign(res.data);
-          // setClients(res.data.usedBy);
+          setClient(res.data.usedBy);
           const sectionIndex = res.data.sections.findIndex(
             (s) => s.name === section
           );
@@ -165,6 +165,26 @@ const OneDesign = () => {
       element.classList.toggle("active", hasFocus);
     }
   };
+
+  async function handleNotify(event) {
+    event.preventDefault();
+    console.log("Should notify", client[0], client[0]._id);
+
+    try {
+      const res = await axios
+        .get(`${BACKEND_URL}/api/designs/notify/${client[0]._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          console.log("res", res);
+        });
+    } catch (error) {
+      console.log("there is an error", error);
+      //
+    }
+  }
 
   const handleDelete = async (event) => {
     event.preventDefault();
@@ -374,6 +394,12 @@ const OneDesign = () => {
           </button>
 
           <br />
+
+          {isLoggedIn && user.status === "admin" && (
+            <button className="btn" onClick={handleNotify}>
+              Notify Client
+            </button>
+          )}
 
           <button className="btn" onClick={handleDelete}>
             Delete
