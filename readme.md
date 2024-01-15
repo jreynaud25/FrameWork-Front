@@ -18,12 +18,12 @@ The `OneDesign` component is a React component used to display and interact with
 Add the following environment variables:
 Set up environment variables:
 
-````bash
- env
- Copy code
+```bash
+.env
  VITE_BACKEND_URL=http://localhost:3000
  VITE_FIGMATOKEN=<your-figma-token>
- Start the development server:
+
+```
 
 ```bash
 Copy code
@@ -32,43 +32,88 @@ Usage
 Components:
 Select Section:
 
-Dropdown menu to select a design section.
-Default selection based on the :section parameter from the URL.
-Select Frame:
+```
 
-Dropdown menu to select a frame within the chosen section.
-Default selection based on the first frame in the selected section.
-Edit Text:
+3. **The functions**
 
-Textareas for each variable in the design.
-Text data can be input and edited.
-Upload Pictures:
+First the useEffect launch the getDesign() function.
 
-File input for each image in the design.
-Pictures can be uploaded for customization.
-Scale Adjustment:
+```bash
+  useEffect(() => {
+    getDesign();
+  }, []);
 
-Input field to adjust the scale between 0.01 and 4.
-Scale value is displayed and can be modified.
-Generate Image:
+```
 
-Button to generate a new design based on user inputs.
-Initiates a download of the generated design.
-Download Frame:
+The **_getDesign()_** function ake an axios get to the backend. And set 4 states (design/selectedTemplate/selectedFrame/newText)
 
-Button to download the currently selected frame.
-Delete Design:
+It then trigger a second useEffect(), which launch the download of the preview svg on the right of the screen. Setting **setTemplateReady(false);** make the loading appear.
 
-Button to delete the entire design.
-Preview:
-Displays a preview of the generated design.
-Dependencies
-React: A JavaScript library for building user interfaces.
-React Router: Declarative routing for React.js.
-Axios: Promise-based HTTP client for the browser and Node.js.
-Contributing
-Contributions are welcome! Feel free to open issues or submit pull requests.
+```bash
+  useEffect(() => {
+    setTemplateReady(false);
+    // console.log("le selected frame", selectedFrame.frameId);
+    dowloadTemplate(selectedFrame.frameId);
+  }, [selectedFrame]);
 
-License
-This project is licensed under the MIT License.
-````
+```
+
+**downloadTemplate()** is retriving the svg from the figma API
+
+```bash
+
+
+  //Download the Template
+  const dowloadTemplate = async (idToDownload, setChange) => {
+    // console.log("Downloading the template with id", idToDownload);
+    try {
+      const res = await axios
+        .get(
+          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=1&svg_include_id=true&svg_include_node_id=true`,
+          {
+            headers: {
+              "X-Figma-Token": FIGMATOKEN,
+            },
+          }
+        )
+        .then(async (res) => {
+          const svgData = await fetch(
+            res.data.images[Object.keys(res.data.images)[0]]
+          ).then((res) => res.text());
+          setSvg(svgData);
+          setTemplateReady(true);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+```
+
+**The HTML returned**
+
+Note that all the Sections and Frames of your figma file will be displayed.
+
+**_Variables_**
+
+Bellow you can see the code. Note that, every variable with the name of the frame and/or with the keywork "all" will be displayed. It's the same for the images
+
+```bash
+
+   {design.variables.map((element, index) => {
+            //console.log(element.name, selectedFrame);
+            if (
+              (element.name
+                .toLowerCase()
+                .includes(selectedTemplate.name.toLowerCase()) &&
+                element.name
+                  .toLowerCase()
+                  .includes(selectedFrame.frameName.toLowerCase())) ||
+              (element.name
+                .toLowerCase()
+                .includes(selectedTemplate.name.toLowerCase()) &&
+                element.name.toLowerCase().includes("all"))
+            )
+
+```

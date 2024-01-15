@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
@@ -13,7 +13,7 @@ const Designs = () => {
   const fetchClients = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/client`);
-      console.log("les clients", response);
+      // console.log("les clients", response);
       setClients(response.data);
     } catch (error) {
       console.log(error);
@@ -28,7 +28,7 @@ const Designs = () => {
         },
       });
       setDesigns(allDesigns.data);
-      console.log("les designs", allDesigns.data);
+      // console.log("les designs", allDesigns.data);
     } catch (error) {
       console.log(error);
     }
@@ -95,13 +95,6 @@ const Designs = () => {
                     </>
                   );
                 }
-                // } else {
-                //   return (
-                //     <Link key={design._id} to={design._id}>
-                //       <div className="btn">{design.FigmaName}</div>
-                //     </Link>
-                //   );
-                // }
               })}
             </div>
           );

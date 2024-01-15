@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
-import Homepage from "./pages/Homepage";
 import Clients from "./pages/Clients";
 import Designs from "./pages/Designs";
 import NotFound from "./pages/NotFound";
@@ -9,11 +8,8 @@ import ProtectedRoute from "./pages/ProtectedRoute";
 import IsAdmin from "./pages/IsAdmin";
 import CreateDesign from "./components/CreateDesign";
 import OneDesign from "./pages/OneDesign";
-// import { useContext } from "react"
-// import { AuthContext } from "./context/authContext"
+
 function App() {
-  // const values = useContext(AuthContext)
-  // console.log(values)
   return (
     <>
       <Routes>
