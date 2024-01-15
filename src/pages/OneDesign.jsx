@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
 import "./OneDesign.css";
-// import { AuthContext } from "../context/authContext";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
@@ -10,22 +9,21 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 //Retriving the design
 const OneDesign = () => {
   const [design, setDesign] = useState();
-  const [clients, setClients] = useState("");
+  // const [clients, setClients] = useState("");
   const [selectedTemplate, setselectedTemplate] = useState({});
   const [selectedFrame, setSelectedFrame] = useState({});
-  // const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
   const uniqueImageNames = new Set();
   const [newText, setNewText] = useState([]);
-  // const [toDownload, setTodownload] = useState(false);
-  // const [templateImg, setTemplateImg] = useState(false);
   const [svg, setSvg] = useState(null);
   const [templateReady, setTemplateReady] = useState(false);
-  // const [isGenerated, setIsGenerated] = useState(false);
   const [pictures, setPictures] = useState([]);
   const [scale, setScale] = useState(1);
 
   const { id, section } = useParams();
+
+  //-------------! Function to retrive datas !-------------
+
   const getDesign = async () => {
     try {
       const res = await axios
@@ -36,7 +34,7 @@ const OneDesign = () => {
         })
         .then((res) => {
           setDesign(res.data);
-          setClients(res.data.usedBy);
+          // setClients(res.data.usedBy);
           const sectionIndex = res.data.sections.findIndex(
             (s) => s.name === section
           );
@@ -50,7 +48,6 @@ const OneDesign = () => {
             setselectedTemplate(res.data.sections[0]);
             setSelectedFrame(res.data.sections[0].frames[0]);
           }
-          //console.log("got the deisgn", res.data, res.data.variables);
           setNewText(res.data.variables);
         });
     } catch (error) {
@@ -86,15 +83,6 @@ const OneDesign = () => {
     }
   };
 
-  //Function for the editing
-  const handleInputFocus = (svgId, hasFocus) => {
-    const element = document.getElementById(svgId);
-    console.log("element", element);
-    if (element) {
-      element.classList.toggle("active", hasFocus);
-    }
-  };
-
   //Download the Template
   const dowloadTemplate = async (idToDownload, setChange) => {
     // console.log("Downloading the template with id", idToDownload);
@@ -120,7 +108,10 @@ const OneDesign = () => {
     }
   };
 
-  //Generate the new design
+  //-------------! Function to make changes !-------------
+
+  //Function for the editing
+
   const generateDesign = async (event) => {
     event.preventDefault();
     setTemplateReady(false);
@@ -156,10 +147,9 @@ const OneDesign = () => {
     }
   };
 
+  //-------------! Handling functions !-------------
   function handleFile(event, name) {
     console.log(event.target.files);
-    console.log("can i get index", name);
-
     const newPicture = {
       name: name,
       file: event.target.files[0],
@@ -168,12 +158,17 @@ const OneDesign = () => {
     setPictures((prevPictures) => [...prevPictures, newPicture]);
   }
 
+  const handleInputFocus = (svgId, hasFocus) => {
+    const element = document.getElementById(svgId);
+    //console.log("element", element);
+    if (element) {
+      element.classList.toggle("active", hasFocus);
+    }
+  };
+
   const handleDelete = async (event) => {
-    console.log("Handle delete");
     event.preventDefault();
-
     const userConfirmed = window.confirm("Are you sure you want to delete?");
-
     if (!userConfirmed) {
       // User canceled the deletion
       return;
@@ -195,6 +190,8 @@ const OneDesign = () => {
     }
   };
 
+  //-------------! End of handling functions !-------------
+
   // The Page generation
   useEffect(() => {
     getDesign();
@@ -214,6 +211,9 @@ const OneDesign = () => {
     <>
       <h1>{design.FigmaName}</h1>
       <div className="mainFrame">
+        {
+          // Displaying all the sections and all the frame in "select form", and setting also default values in selectedFrame and selectedTemplace states
+        }
         <form>
           <select
             value={selectedTemplate.name}
@@ -227,7 +227,7 @@ const OneDesign = () => {
               if (selectedSection && selectedSection.frames.length > 0) {
                 setSelectedFrame(selectedSection.frames[0]);
               } else {
-                // Si la nouvelle section n'a pas de cadres, effacer le cadre sélectionné
+                // Si la nouvelle section n'a pas de frame, effacer la frame sélectionné
                 setSelectedFrame(null);
               }
             }}
@@ -245,16 +245,10 @@ const OneDesign = () => {
           <select
             value={selectedFrame.frameName}
             onChange={(e) => {
-              console.log(
-                "y a du changement dans les frames",
-                selectedTemplate
-              );
-              // setTodownload(null);
               const selectedFrameName = e.target.value;
               const selectedFrameToFind = selectedTemplate.frames.find(
                 (frame) => frame.frameName === selectedFrameName
               );
-              console.log("la selected frame", selectedFrameToFind);
               setSelectedFrame(selectedFrameToFind);
             }}
           >
@@ -267,6 +261,9 @@ const OneDesign = () => {
             })}
           </select>
 
+          {
+            //Displaying correctly all the variables
+          }
           {design.variables.map((element, index) => {
             //console.log(element.name, selectedFrame);
             if (
