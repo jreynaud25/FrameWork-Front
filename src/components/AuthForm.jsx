@@ -31,16 +31,16 @@ const AuthForm = ({ mode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (subdomain != "www" || subdomain != "frame-work") {
-      if (username.toLowerCase() !== subdomain.toLowerCase()) {
-        console.log("the subdomain is ", subdomain);
-        alert(
-          `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
-        );
-        window.location.href = FRONTEND_URL;
-        return;
-      }
-    }
+    // if (subdomain != "www" || subdomain != "frame-work") {
+    //   if (username.toLowerCase() !== subdomain.toLowerCase()) {
+    //     console.log("the subdomain is ", subdomain);
+    //     alert(
+    //       `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
+    //     );
+    //     window.location.href = FRONTEND_URL;
+    //     return;
+    //   }
+    // }
 
     try {
       const userToLogin = { username, password, email };
