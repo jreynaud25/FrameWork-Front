@@ -7,7 +7,7 @@ const FRONTEND_URL =
   import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
 const Navbar = () => {
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
-  //console.log(user);
+  console.log(user);
   const logout = () => {
     localStorage.removeItem("token");
     authenticateUser();
@@ -42,6 +42,10 @@ const Navbar = () => {
             <li>
               <NavLink to={"/Designs"}>Designs</NavLink>
             </li>
+            {user.pictureUrl && (
+              <img src={user.pictureUrl} style={{ width: "50px" }}></img>
+            )}
+
             <li>
               <button onClick={logout}>Logout</button>
             </li>

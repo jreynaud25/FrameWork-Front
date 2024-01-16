@@ -53,6 +53,7 @@ const Clients = () => {
                 {client.username} {client.status} {client.email}{" "}
                 <button onClick={() => handleDelete(client._id)}>Delete</button>
               </p>
+              <img src={client.pictureUrl}></img>
             </div>
           );
         })}
