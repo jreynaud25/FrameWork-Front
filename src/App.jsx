@@ -10,6 +10,7 @@ import CreateDesign from "./components/CreateDesign";
 import OneDesign from "./pages/OneDesign";
 
 function App() {
+  console.log(window.location.host);
   return (
     <>
       <Routes>
@@ -28,6 +29,10 @@ function App() {
 
           <Route path="/auth">
             <Route path="login" element={<AuthForm mode="Log in" />} />
+            <Route
+              path="loggedin"
+              element={<AuthForm mode="Loggedin" />}
+            ></Route>
             <Route path="create" element={<AuthForm mode="Create" />} />
             <Route path="reset" element={<AuthForm mode="Reset" />}></Route>
           </Route>

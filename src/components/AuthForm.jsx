@@ -3,8 +3,10 @@ import axios from "axios";
 import "./AuthForm.css";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useSearchParams, useNavigate, NavLink } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+const FRONTEND_URL =
+  import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
 const AuthForm = ({ mode }) => {
   const { user, authenticateUser, isLoggedIn } = useContext(AuthContext);
   const [username, setUsername] = useState("");
@@ -13,9 +15,30 @@ const AuthForm = ({ mode }) => {
   const [error, setError] = useState("");
   const [response, setResponse] = useState("");
   const navigate = useNavigate();
+  const currentURL = window.location.host;
+  const subdomain = currentURL.split(".")[0];
+  const domain = FRONTEND_URL.split("//")[1];
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  if (mode === "Loggedin") {
+    const token = searchParams.get("token");
+    console.log("should save the token received as param", token);
+    localStorage.setItem("token", token);
+
+    // setResponse("ok");
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (username.toLowerCase() !== subdomain.toLowerCase()) {
+      alert(
+        `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
+      );
+      window.location.href = FRONTEND_URL;
+      return;
+    }
     try {
       const userToLogin = { username, password, email };
 
@@ -55,7 +78,9 @@ const AuthForm = ({ mode }) => {
         localStorage.setItem("token", response.data.token);
         setError("");
         await authenticateUser();
-        navigate("/designs");
+        // navigate(`/designs`);
+        console.log("moving");
+        window.location.href = `https://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
       }
     } catch (error) {
       console.log(error);
@@ -69,6 +94,12 @@ const AuthForm = ({ mode }) => {
       setEmail(user.email);
     }
   }, []);
+  useEffect(() => {
+    if (mode === "Loggedin") {
+      navigate("/Designs");
+    }
+  }, [localStorage]);
+
   return (
     <div>
       <form className="login-container" onSubmit={handleSubmit}>
