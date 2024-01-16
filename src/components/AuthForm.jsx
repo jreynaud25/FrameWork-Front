@@ -16,7 +16,7 @@ const AuthForm = ({ mode }) => {
   const [response, setResponse] = useState("");
   const navigate = useNavigate();
   const currentURL = window.location.host;
-  const subdomain = currentURL.split(".")[0];
+  const subdomain = currentURL.split("www.")[0];
   const domain = FRONTEND_URL.split("//")[1];
 
   const [searchParams, setSearchParams] = useSearchParams();
