@@ -14,6 +14,7 @@ const AuthForm = ({ mode }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [response, setResponse] = useState("");
+  const [pictures, setPictures] = useState([]);
   const navigate = useNavigate();
   const currentURL = window.location.host;
   const subdomain = currentURL.split(".")[0];
@@ -31,27 +32,38 @@ const AuthForm = ({ mode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // if (subdomain != "www" || subdomain != "frame-work") {
-    //   if (username.toLowerCase() !== subdomain.toLowerCase()) {
-    //     console.log("the subdomain is ", subdomain);
-    //     alert(
-    //       `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
-    //     );
-    //     window.location.href = FRONTEND_URL;
-    //     return;
-    //   }
-    // }
 
     try {
       const userToLogin = { username, password, email };
 
       if (mode === "Create") {
-        console.log("bonjour je dois creer cet user", userToLogin);
-        const response = await axios.post(
-          //`${BACKEND_URL}/api/client`,
-          `${BACKEND_URL}/api/auth/signup`,
-          userToLogin
+        console.log(
+          "bonjour je dois creer cet user",
+          userToLogin,
+          pictures.file,
+          pictures.file.name
         );
+        const fd = new FormData();
+        fd.append("username", JSON.stringify(userToLogin.username));
+        fd.append("email", JSON.stringify(userToLogin.email));
+        fd.append("pictures", pictures.file, pictures.file.name);
+
+        console.log("le fd total", fd);
+        // const response = await axios.post(
+        //   `${BACKEND_URL}/api/auth/signup`,
+        //   userToLogin
+        // );
+        const response = await axios.post(
+          `${BACKEND_URL}/api/auth/signup`,
+          fd,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        console.log("response", response);
         navigate("/Clients");
       } else if (mode === "Update") {
         console.log("goind to patch", userToLogin);
@@ -83,13 +95,25 @@ const AuthForm = ({ mode }) => {
         await authenticateUser();
         // navigate(`/designs`);
         console.log("moving");
-        window.location.href = `https://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
+        window.location.href = `http://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
       }
     } catch (error) {
       console.log(error);
       setError(error.response.data.message);
     }
   };
+
+  function handleFile(event, name) {
+    console.log(event.target.files);
+    console.log("hndling file", event.target.files);
+    console.log("name", event.target.files[0].name);
+    const newPicture = {
+      name: event.target.files[0].name,
+      file: event.target.files[0],
+    };
+    // Add the new picture to the existing pictures array
+    setPictures(newPicture);
+  }
 
   useEffect(() => {
     if (isLoggedIn && mode === "Update") {
@@ -123,14 +147,20 @@ const AuthForm = ({ mode }) => {
           )}
         </div>
         {isLoggedIn && (
-          <div>
-            <label htmlFor="email">email: </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <>
+            <div>
+              <label htmlFor="email">email: </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              Profile picture
+              <input id="fileInput" type="file" onChange={handleFile} />
+            </div>
+          </>
         )}
 
         {mode !== "Create" && mode !== "Reset" && (
