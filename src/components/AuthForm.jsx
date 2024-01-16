@@ -15,12 +15,33 @@ const AuthForm = ({ mode }) => {
   const [error, setError] = useState("");
   const [response, setResponse] = useState("");
   const [pictures, setPictures] = useState([]);
+  const [clients, setClients] = useState([]);
+
   const navigate = useNavigate();
   const currentURL = window.location.host;
   const subdomain = currentURL.split(".")[0];
   const domain = FRONTEND_URL.split("//")[1];
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const fetchClients = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/client/all`);
+      //.log("fetching clients", response);
+      setClients(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  function isStringContained(clients, subdomain) {
+    for (const client of clients) {
+      if (client.username === subdomain) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   if (mode === "Loggedin") {
     const token = searchParams.get("token");
@@ -95,7 +116,17 @@ const AuthForm = ({ mode }) => {
         await authenticateUser();
         // navigate(`/designs`);
         console.log("moving");
-        window.location.href = `https://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
+        //just for dev purpose
+        if (
+          currentURL.includes("localhost") ||
+          currentURL.includes("damdam.io")
+        ) {
+          console.log("salut include localhost", domain);
+          window.location.href = `http://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
+        } else {
+          console.log("pas de local host", domain);
+          window.location.href = `https://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
+        }
       }
     } catch (error) {
       console.log(error);
@@ -116,11 +147,22 @@ const AuthForm = ({ mode }) => {
   }
 
   useEffect(() => {
+    fetchClients();
     if (isLoggedIn && mode === "Update") {
       setUsername(user.username);
       setEmail(user.email);
     }
   }, []);
+  useEffect(() => {
+    if (
+      domain != currentURL &&
+      clients.length > 0 &&
+      !isStringContained(clients, subdomain)
+    ) {
+      console.log("moving to default page");
+      window.location.href = `${FRONTEND_URL}`;
+    }
+  }, [clients]);
   useEffect(() => {
     if (mode === "Loggedin") {
       navigate("/Designs");
