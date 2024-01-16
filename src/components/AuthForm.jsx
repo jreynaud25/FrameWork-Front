@@ -16,7 +16,7 @@ const AuthForm = ({ mode }) => {
   const [response, setResponse] = useState("");
   const navigate = useNavigate();
   const currentURL = window.location.host;
-  const subdomain = currentURL.split("www.")[0];
+  const subdomain = currentURL.split(".")[0];
   const domain = FRONTEND_URL.split("//")[1];
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,7 +32,10 @@ const AuthForm = ({ mode }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (username.toLowerCase() !== subdomain.toLowerCase()) {
+    if (
+      subdomain != "www" &&
+      username.toLowerCase() !== subdomain.toLowerCase()
+    ) {
       alert(
         `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
       );
