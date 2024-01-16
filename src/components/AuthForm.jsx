@@ -31,16 +31,16 @@ const AuthForm = ({ mode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (subdomain != "www" || subdomain != "frame-work") {
-      if (username.toLowerCase() !== subdomain.toLowerCase()) {
-        console.log("the subdomain is ", subdomain);
-        alert(
-          `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
-        );
-        window.location.href = FRONTEND_URL;
-        return;
-      }
-    }
+    // if (subdomain != "www" || subdomain != "frame-work") {
+    //   if (username.toLowerCase() !== subdomain.toLowerCase()) {
+    //     console.log("the subdomain is ", subdomain);
+    //     alert(
+    //       `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
+    //     );
+    //     window.location.href = FRONTEND_URL;
+    //     return;
+    //   }
+    // }
 
     try {
       const userToLogin = { username, password, email };
@@ -83,7 +83,7 @@ const AuthForm = ({ mode }) => {
         await authenticateUser();
         // navigate(`/designs`);
         console.log("moving");
-        window.location.href = `https://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
+        window.location.href = `http://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
       }
     } catch (error) {
       console.log(error);
