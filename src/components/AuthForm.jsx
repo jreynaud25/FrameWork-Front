@@ -6,7 +6,7 @@ import { AuthContext } from "../context/authContext";
 import { useSearchParams, useNavigate, NavLink } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FRONTEND_URL =
-  import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
+  import.meta.env.VITE_FRONTEND_URL || "https://www.frame-work.app";
 const AuthForm = ({ mode }) => {
   const { user, authenticateUser, isLoggedIn } = useContext(AuthContext);
   const [username, setUsername] = useState("");
@@ -16,7 +16,7 @@ const AuthForm = ({ mode }) => {
   const [response, setResponse] = useState("");
   const navigate = useNavigate();
   const currentURL = window.location.host;
-  const subdomain = currentURL.split("www.")[0];
+  const subdomain = currentURL.split(".")[0];
   const domain = FRONTEND_URL.split("//")[1];
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,14 +31,17 @@ const AuthForm = ({ mode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (username.toLowerCase() !== subdomain.toLowerCase()) {
-      alert(
-        `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
-      );
-      window.location.href = FRONTEND_URL;
-      return;
+    if (subdomain != "www") {
+      if (username.toLowerCase() !== subdomain.toLowerCase()) {
+        console.log("the subdomain is ", subdomain);
+        alert(
+          `You're not part of this subdomain, redirecting to : ${FRONTEND_URL}`
+        );
+        window.location.href = FRONTEND_URL;
+        return;
+      }
     }
+
     try {
       const userToLogin = { username, password, email };
 
