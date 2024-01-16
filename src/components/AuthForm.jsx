@@ -31,7 +31,7 @@ const AuthForm = ({ mode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (subdomain != "www") {
+    if (subdomain != "www" || subdomain != "frame-work") {
       if (username.toLowerCase() !== subdomain.toLowerCase()) {
         console.log("the subdomain is ", subdomain);
         alert(
