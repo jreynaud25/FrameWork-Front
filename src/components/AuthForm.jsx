@@ -83,7 +83,7 @@ const AuthForm = ({ mode }) => {
         await authenticateUser();
         // navigate(`/designs`);
         console.log("moving");
-        window.location.href = `http://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
+        window.location.href = `https://${username}.${domain}/auth/loggedin?token=${response.data.token}`;
       }
     } catch (error) {
       console.log(error);
