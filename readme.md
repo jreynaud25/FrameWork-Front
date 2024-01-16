@@ -2,7 +2,7 @@
 
 ## Description
 
-The `OneDesign` component is a React component used to display and interact with design data fetched from a backend. It allows users to select a design section and frame, input text data, upload pictures, adjust scale, generate a new design, and download the result.
+The `OneDesign` component is a great React component used to display and interact with design data fetched from a backend. It allows users to select a design section and frame, input text data, upload pictures, adjust scale, generate a new design, and download the result.
 
 ## Installation
 
