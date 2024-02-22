@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
@@ -81,15 +81,31 @@ const Designs = () => {
                       <Link key={design._id} to={design._id}>
                         <div className="btn">{design.FigmaName}</div>
                       </Link>
+                      <p> Ici les sections</p>
                       {design.sections.map((section) => {
                         //console.log("bonjours", section);
+
                         return (
-                          <Link
-                            key={section._id}
-                            to={`${design._id}/${section.name}`}
-                          >
-                            <div className="btn">{section.name}</div>
-                          </Link>
+                          <>
+                            <Link
+                              key={section._id}
+                              to={`${design._id}/${section.name}`}
+                            >
+                              <div className="btn">{section.name}</div>
+                            </Link>
+                            <div>
+                              {section.frames.map((frame) => {
+                                return (
+                                  <Link
+                                    to={`${design._id}/${section.name}/${frame.frameName}`}
+                                  >
+                                    <p>{frame.frameName}</p>
+                                    <img src={frame.thumbnailURL}></img>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </>
                         );
                       })}
                     </>
@@ -108,7 +124,7 @@ const Designs = () => {
                 <div className="btn">{design.FigmaName}</div>
               </Link>
               {design.sections.map((section) => {
-                console.log("bonjours", section);
+                console.log("bonjours les sections", section);
                 return (
                   <Link key={section._id} to={design._id}>
                     <div className="btn">{section.name}</div>

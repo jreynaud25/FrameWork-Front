@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
-import "./OneDesign.css";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
+import "./OneDesign.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 
@@ -20,8 +20,8 @@ const OneDesign = () => {
   const [pictures, setPictures] = useState([]);
   const [scale, setScale] = useState(1);
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
-  const { id, section } = useParams();
-
+  const { id, section, frame } = useParams();
+  console.log("bonjour nous avons id et seciton", id, section, frame);
   //-------------! Function to retrive datas !-------------
 
   const getDesign = async () => {
@@ -33,6 +33,7 @@ const OneDesign = () => {
           },
         })
         .then((res) => {
+          console.log("succegul retrieved from db", res.data.sections);
           setDesign(res.data);
           setClient(res.data.usedBy);
           const sectionIndex = res.data.sections.findIndex(
@@ -42,7 +43,23 @@ const OneDesign = () => {
           if (sectionIndex !== -1) {
             // If the section is found, use the found section
             setselectedTemplate(res.data.sections[sectionIndex]);
-            setSelectedFrame(res.data.sections[sectionIndex].frames[0]);
+            if (frame) {
+              const frameIndex = res.data.sections[
+                sectionIndex
+              ].frames.findIndex((s) => s.frameName === frame);
+              console.log("specfic salut", res.data.sections.frames);
+
+              console.log(
+                "bonjour le frameIndex",
+                frameIndex,
+                res.data.sections[sectionIndex].frames[frameIndex]
+              );
+              setSelectedFrame(
+                res.data.sections[sectionIndex].frames[frameIndex]
+              );
+            } else {
+              setSelectedFrame(res.data.sections[sectionIndex].frames[0]);
+            }
           } else {
             // If the section is not found, use the first section as a fallback
             setselectedTemplate(res.data.sections[0]);
@@ -58,7 +75,7 @@ const OneDesign = () => {
 
   //Download the design
   const dowloadDesign = async (idToDownload, setChange) => {
-    //console.log("Starting the download with params", idToDownload, setChange);
+    console.log("Starting the download with params", idToDownload, setChange);
     try {
       const res = await axios
         .get(
@@ -70,6 +87,10 @@ const OneDesign = () => {
           }
         )
         .then((res) => {
+          console.log(
+            "la res",
+            res.data.images[Object.keys(res.data.images)[0]]
+          );
           const link = document.createElement("a");
           link.href = res.data.images[Object.keys(res.data.images)[0]];
           link.download = "downloaded_image.png";
@@ -85,7 +106,10 @@ const OneDesign = () => {
 
   //Download the Template
   const dowloadTemplate = async (idToDownload, setChange) => {
-    // console.log("Downloading the template with id", idToDownload);
+    console.log(
+      "Downloading the template with id",
+      `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=1&svg_include_id=true&svg_include_node_id=true`
+    );
     try {
       const res = await axios
         .get(
@@ -97,6 +121,10 @@ const OneDesign = () => {
           }
         )
         .then(async (res) => {
+          console.log(
+            "Download response : ",
+            res.data.images[Object.keys(res.data.images)[0]]
+          );
           const svgData = await fetch(
             res.data.images[Object.keys(res.data.images)[0]]
           ).then((res) => res.text());
@@ -134,7 +162,7 @@ const OneDesign = () => {
           console.log("reponse from generating ", res.data);
           setTimeout(() => {
             dowloadTemplate(selectedFrame.frameId);
-          }, 3000);
+          }, 1000);
 
           //Resetting the input
           const inputFile = document.getElementById("fileInput");

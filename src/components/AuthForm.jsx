@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./AuthForm.css";
-import { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
-import { useSearchParams, useNavigate, NavLink } from "react-router-dom";
+import "./AuthForm.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FRONTEND_URL =
   import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
+
 const AuthForm = ({ mode }) => {
   const { user, authenticateUser, isLoggedIn } = useContext(AuthContext);
   const [username, setUsername] = useState("");
