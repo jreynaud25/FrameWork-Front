@@ -1,13 +1,13 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import AuthForm from "./components/AuthForm";
+import CreateDesign from "./components/CreateDesign";
 import Layout from "./components/Layout";
 import Clients from "./pages/Clients";
 import Designs from "./pages/Designs";
-import NotFound from "./pages/NotFound";
-import AuthForm from "./components/AuthForm";
-import ProtectedRoute from "./pages/ProtectedRoute";
 import IsAdmin from "./pages/IsAdmin";
-import CreateDesign from "./components/CreateDesign";
+import NotFound from "./pages/NotFound";
 import OneDesign from "./pages/OneDesign";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 function App() {
   console.log(window.location.host);
@@ -24,6 +24,10 @@ function App() {
             <Route path="/designs/create" element={<CreateDesign />} />
             <Route path="/designs/:id" element={<OneDesign />} />
             <Route path="/designs/:id/:section" element={<OneDesign />} />
+            <Route
+              path="/designs/:id/:section/:frame"
+              element={<OneDesign />}
+            />
             <Route path="/profile" element={<AuthForm mode="Update" />}></Route>
           </Route>
 
