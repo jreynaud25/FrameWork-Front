@@ -1,0 +1,11 @@
+.mainFrame {
+  display: flex;
+}
+
+.active {
+  mix-blend-mode: normal !important;
+  fill: red !important;
+  & path {
+    fill: red;
+  }
+}
