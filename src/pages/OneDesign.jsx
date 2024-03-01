@@ -430,11 +430,11 @@ const OneDesign = () => {
             <label>
               Scale between 0,01 and 4:
               <input
-                type="number"
+                type="range"
                 value={scale}
-                min="0.01"
+                min="0.5"
                 max="4"
-                step="0.01"
+                step="0.5"
                 onChange={() => setScale(parseFloat(event.target.value))}
               />
             </label>
