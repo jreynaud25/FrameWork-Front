@@ -10,8 +10,10 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 const OneDesign = () => {
   const [design, setDesign] = useState();
   const [client, setClient] = useState("");
+  const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [selectedTemplate, setselectedTemplate] = useState({});
   const [selectedFrame, setSelectedFrame] = useState({});
+  let newThumbnailURL = "";
   const navigate = useNavigate(); // Use useNavigate hook to get the navigation function
   const uniqueImageNames = new Set();
   const [newText, setNewText] = useState([]);
@@ -21,7 +23,7 @@ const OneDesign = () => {
   const [scale, setScale] = useState(1);
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const { id, section, frame } = useParams();
-  console.log("bonjour nous avons id et seciton", id, section, frame);
+  //console.log("bonjour render", id, section, frame);
   //-------------! Function to retrive datas !-------------
 
   const getDesign = async () => {
@@ -33,9 +35,10 @@ const OneDesign = () => {
           },
         })
         .then((res) => {
-          console.log("succegul retrieved from db", res.data.sections);
+          console.log("succegul retrieved from db", res.data);
           setDesign(res.data);
           setClient(res.data.usedBy);
+
           const sectionIndex = res.data.sections.findIndex(
             (s) => s.name === section
           );
@@ -47,13 +50,7 @@ const OneDesign = () => {
               const frameIndex = res.data.sections[
                 sectionIndex
               ].frames.findIndex((s) => s.frameName === frame);
-              console.log("specfic salut", res.data.sections.frames);
 
-              console.log(
-                "bonjour le frameIndex",
-                frameIndex,
-                res.data.sections[sectionIndex].frames[frameIndex]
-              );
               setSelectedFrame(
                 res.data.sections[sectionIndex].frames[frameIndex]
               );
@@ -74,44 +71,59 @@ const OneDesign = () => {
   };
 
   //Download the design
-  const dowloadDesign = async (idToDownload, setChange) => {
-    console.log("Starting the download with params", idToDownload, setChange);
+
+  const dowloadDesign = async (idToDownload) => {
+    console.log(
+      "Starting the download with params",
+      idToDownload,
+      scale,
+      design.FigmaFileKey
+    );
     try {
-      const res = await axios
-        .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
-          {
-            headers: {
-              "X-Figma-Token": FIGMATOKEN,
-            },
-          }
-        )
-        .then((res) => {
-          console.log(
-            "la res",
-            res.data.images[Object.keys(res.data.images)[0]]
-          );
+      const response = await axios.get(
+        `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
+        {
+          headers: {
+            "X-Figma-Token": FIGMATOKEN,
+          },
+        }
+      );
+      //console.log(response.data.images);
+      // Get the URL directly from the images object
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", response.data.images[idToDownload], true);
+        xhr.responseType = "blob";
+
+        xhr.onload = function () {
+          const blob = xhr.response;
+          // Create a link element
           const link = document.createElement("a");
-          link.href = res.data.images[Object.keys(res.data.images)[0]];
-          link.download = "downloaded_image.png";
-          // Append the link to the body and trigger the download
+          // Set link properties
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `${design.FigmaName}-${selectedTemplate.name}-${selectedFrame.frameName}.png`;
+          // Append the link to the body and trigger the click event
           document.body.appendChild(link);
           link.click();
+
+          // Remove the link from the body
           document.body.removeChild(link);
-        });
+        };
+
+        xhr.send();
+      } catch (error) {
+        console.error(error);
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  //Download the Template
-  const dowloadTemplate = async (idToDownload, setChange) => {
-    console.log(
-      "Downloading the template with id",
-      `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=1&svg_include_id=true&svg_include_node_id=true`
-    );
+  const dowloadTemplate = async (idToDownload) => {
+    setLoadingMessage("Waiting for Figma response");
     try {
-      const res = await axios
+      // Make the initial GET request to Figma API
+      const figmaApiResponse = await axios
         .get(
           `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=1&svg_include_id=true&svg_include_node_id=true`,
           {
@@ -121,10 +133,13 @@ const OneDesign = () => {
           }
         )
         .then(async (res) => {
+          setLoadingMessage("Downloading informations from Figma response");
           console.log(
             "Download response : ",
             res.data.images[Object.keys(res.data.images)[0]]
           );
+          newThumbnailURL = res.data.images[Object.keys(res.data.images)[0]];
+          sendSvgDataToBackend(newThumbnailURL);
           const svgData = await fetch(
             res.data.images[Object.keys(res.data.images)[0]]
           ).then((res) => res.text());
@@ -132,7 +147,27 @@ const OneDesign = () => {
           setTemplateReady(true);
         });
     } catch (error) {
-      console.log(error);
+      console.error("Error:", error);
+    }
+  };
+
+  const sendSvgDataToBackend = async (urlToUpdate) => {
+    try {
+      // Send SVG data to the backend using axios.post
+      await axios.post(
+        `${BACKEND_URL}/api/designs/${id}`,
+        {
+          thumbnailURL: urlToUpdate,
+          selectedFrame: selectedFrame,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error sending SVG data to the backend:", error);
     }
   };
 
@@ -141,6 +176,7 @@ const OneDesign = () => {
   //Function for the editing
 
   const generateDesign = async (event) => {
+    setLoadingMessage("Starting Generating");
     event.preventDefault();
     setTemplateReady(false);
     const fd = new FormData();
@@ -160,6 +196,7 @@ const OneDesign = () => {
         })
         .then((res) => {
           console.log("reponse from generating ", res.data);
+          setLoadingMessage("Request sent to backend");
           setTimeout(() => {
             dowloadTemplate(selectedFrame.frameId);
           }, 1000);
@@ -252,7 +289,7 @@ const OneDesign = () => {
   }, [selectedFrame]);
 
   if (!design) {
-    return <div>Loading...</div>;
+    return <div>{loadingMessage}</div>;
   }
 
   return (
@@ -414,7 +451,6 @@ const OneDesign = () => {
             className="btn"
             onClick={(e) => {
               e.preventDefault();
-              console.log("bonjour le click", selectedFrame.frameId);
               dowloadDesign(selectedFrame.frameId);
             }}
           >
@@ -436,7 +472,7 @@ const OneDesign = () => {
 
         <div className="preview">
           {!templateReady ? (
-            <p> Generating... </p>
+            <p> {loadingMessage} </p>
           ) : (
             <>
               <div>

@@ -81,10 +81,8 @@ const Designs = () => {
                       <Link key={design._id} to={design._id}>
                         <div className="btn">{design.FigmaName}</div>
                       </Link>
-                      <p> Ici les sections</p>
                       {design.sections.map((section) => {
                         //console.log("bonjours", section);
-
                         return (
                           <>
                             <Link
