@@ -430,7 +430,7 @@ const OneDesign = () => {
             <label>
               Scale between 0,01 and 4:
               <input
-                type="number"
+                type="range"
                 value={scale}
                 min="0.01"
                 max="4"
