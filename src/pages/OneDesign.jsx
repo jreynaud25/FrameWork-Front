@@ -90,6 +90,8 @@ const OneDesign = () => {
       );
       //console.log(response.data.images);
       // Get the URL directly from the images object
+      console.log("The URL of the image", response.data.images[idToDownload]);
+      sendSvgDataToBackend(response.data.images[idToDownload]);
       try {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", response.data.images[idToDownload], true);
@@ -139,7 +141,6 @@ const OneDesign = () => {
             res.data.images[Object.keys(res.data.images)[0]]
           );
           newThumbnailURL = res.data.images[Object.keys(res.data.images)[0]];
-          sendSvgDataToBackend(newThumbnailURL);
           const svgData = await fetch(
             res.data.images[Object.keys(res.data.images)[0]]
           ).then((res) => res.text());
@@ -428,7 +429,7 @@ const OneDesign = () => {
 
           <div>
             <label>
-              Scale between 0,01 and 4:
+              Scale between 0,4 and 4:
               <input
                 type="range"
                 value={scale}
