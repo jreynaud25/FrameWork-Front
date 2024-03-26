@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
+import Logo from "../assets/framework-log.svg";
 const FRONTEND_URL =
   import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
 const Navbar = () => {
@@ -13,46 +14,49 @@ const Navbar = () => {
     authenticateUser();
   };
   return (
-    <nav className="Navbar">
-      <button onClick={() => (window.location.href = FRONTEND_URL)}>
-        {" "}
-        Framework.
-      </button>
-      <ul>
+    <>
+      <nav className="logoWrapper">
+        <img
+          onClick={() => (window.location.href = FRONTEND_URL)}
+          src={Logo}
+          alt="Logo"
+        />
+      </nav>
+      <div className="Navbar">
         {!isLoggedIn && (
           <>
-            <li>
+            <nav>
               <NavLink to={"/auth/login"}>Log in</NavLink>
-            </li>
+            </nav>
           </>
         )}
-        <li>
+        <nav>
           <NavLink to={"/profile"}>{user?.username}</NavLink>
-        </li>
+        </nav>
 
         {isLoggedIn && user.status === "admin" && (
           <>
-            <li>
+            <nav>
               <NavLink to={"/Clients"}>Clients</NavLink>
-            </li>
+            </nav>
           </>
         )}
         {isLoggedIn && (
           <>
-            <li>
+            <nav>
               <NavLink to={"/Designs"}>Designs</NavLink>
-            </li>
+            </nav>
             {user.pictureUrl && (
               <img src={user.pictureUrl} style={{ width: "50px" }}></img>
             )}
 
-            <li>
+            <nav>
               <button onClick={logout}>Logout</button>
-            </li>
+            </nav>
           </>
         )}
-      </ul>
-    </nav>
+      </div>
+    </>
   );
 };
 

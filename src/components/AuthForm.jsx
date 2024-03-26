@@ -170,12 +170,10 @@ const AuthForm = ({ mode }) => {
   }, [localStorage]);
 
   return (
-    <div>
+    <div className="login-wrapper">
       <form className="login-container" onSubmit={handleSubmit}>
-        <div>
           {mode !== "Update" && (
             <label className="title" htmlFor="username">
-              Username:{" "}
             </label>
           )}
           {mode == "Update" && <label>Edit Profile</label>}
@@ -184,34 +182,30 @@ const AuthForm = ({ mode }) => {
             <input
               type="text"
               value={username}
+              placeholder="E-mail"
               onChange={(e) => setUsername(e.target.value)}
             />
           )}
-        </div>
         {isLoggedIn && (
           <>
-            <div>
               <label htmlFor="email">email: </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-            </div>
-            <div>
               Profile picture
               <input id="fileInput" type="file" onChange={handleFile} />
-            </div>
           </>
         )}
 
         {mode !== "Create" && mode !== "Reset" && (
           <div>
             <label className="title" htmlFor="password">
-              Password:{" "}
             </label>
             <input
               type="password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
