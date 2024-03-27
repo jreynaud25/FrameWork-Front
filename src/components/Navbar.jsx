@@ -15,6 +15,15 @@ const Navbar = () => {
   };
   return (
     <>
+      <div className="Navbar">
+      {isLoggedIn && (
+          <>
+            <nav>
+              <NavLink to={"/Designs"}>Designs</NavLink>
+            </nav>
+            </>
+      )}
+      </div>
       <nav className="logoWrapper">
         <img
           onClick={() => (window.location.href = FRONTEND_URL)}
@@ -31,7 +40,7 @@ const Navbar = () => {
           </>
         )}
         <nav>
-          <NavLink to={"/profile"}>{user?.username}</NavLink>
+          <NavLink to={"/profile"}>Settings</NavLink>
         </nav>
 
         {isLoggedIn && user.status === "admin" && (
@@ -43,15 +52,13 @@ const Navbar = () => {
         )}
         {isLoggedIn && (
           <>
-            <nav>
-              <NavLink to={"/Designs"}>Designs</NavLink>
-            </nav>
+           
             {user.pictureUrl && (
               <img src={user.pictureUrl} style={{ width: "50px" }}></img>
             )}
 
-            <nav>
-              <button onClick={logout}>Logout</button>
+            <nav onClick={logout}>
+              <a href="#">Logout</a>
             </nav>
           </>
         )}

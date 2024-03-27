@@ -121,16 +121,37 @@ const Designs = () => {
           return (
             <div className="design-list-wrapper">
               <Link key={design._id} to={design._id}>
-                <div className="btn title">{design.FigmaName}</div>
+                {/* <div className="btn title">{design.FigmaName}</div> */}
               </Link>
               {design.sections.map((section) => {
-                console.log("bonjours les sections", section);
-                return (
-                  <Link key={section._id} to={design._id}>
-                    <div className="btn">{section.name}</div>
-                  </Link>
-                );
-              })}
+                        //console.log("bonjours", section);
+                        return (
+                          <>
+                            <Link
+                              key={section._id}
+                              to={`${design._id}/${section.name}`}
+                            >
+                              <div className="btn title">{section.name}</div>
+                            </Link>
+                            <div className="images-wrapper">
+                              {section.frames.map((frame) => {
+                                return (
+                                  <Link
+                                    to={`${design._id}/${section.name}/${frame.frameName}`}
+                                    className="image-wrapper"
+                                  >
+                                    <div className="text-wrapper">
+                                    <h3>{frame.frameName}</h3>
+                                    <h4>Start Editing</h4>
+                                    </div>
+                                    <img src={frame.thumbnailURL}></img>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </>
+                        );
+                      })}
             </div>
           );
         })}
