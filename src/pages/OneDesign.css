@@ -30,6 +30,10 @@ h1 {
   flex: 1;
 }
 
+.preview p {
+  color: white;
+}
+
 .input-wrapper {
   display: flex;
   flex-direction: column;
