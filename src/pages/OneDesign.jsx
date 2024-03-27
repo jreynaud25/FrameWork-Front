@@ -91,7 +91,7 @@ const OneDesign = () => {
       //console.log(response.data.images);
       // Get the URL directly from the images object
       console.log("The URL of the image", response.data.images[idToDownload]);
-      sendSvgDataToBackend(response.data.images[idToDownload]);
+      sendPNGURLToBackend(response.data.images[idToDownload]);
       try {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", response.data.images[idToDownload], true);
@@ -152,9 +152,9 @@ const OneDesign = () => {
     }
   };
 
-  const sendSvgDataToBackend = async (urlToUpdate) => {
+  const sendPNGURLToBackend = async (urlToUpdate) => {
     try {
-      // Send SVG data to the backend using axios.post
+      // Send PNG URL data to the backend using axios.post
       await axios.post(
         `${BACKEND_URL}/api/designs/${id}`,
         {
