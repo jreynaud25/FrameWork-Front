@@ -20,7 +20,7 @@ const OneDesign = () => {
   const [svg, setSvg] = useState(null);
   const [templateReady, setTemplateReady] = useState(false);
   const [pictures, setPictures] = useState([]);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(4);
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const { id, section, frame } = useParams();
   //console.log("bonjour render", id, section, frame);
@@ -295,102 +295,104 @@ const OneDesign = () => {
 
   return (
     <>
-      <h1>{design.FigmaName}</h1>
+      {/* <h1>{design.FigmaName}</h1> Display name of actual frame */}
       <div className="mainFrame">
         {
           // Displaying all the sections and all the frame in "select form", and setting also default values in selectedFrame and selectedTemplace states
         }
-        <form>
-          <select
-            value={selectedTemplate.name}
-            onChange={(e) => {
-              // setTodownload(null);
-              const selectedSectionName = e.target.value;
-              const selectedSection = design.sections.find(
-                (section) => section.name === selectedSectionName
-              );
-              setselectedTemplate(selectedSection);
-              if (selectedSection && selectedSection.frames.length > 0) {
-                setSelectedFrame(selectedSection.frames[0]);
-              } else {
-                // Si la nouvelle section n'a pas de frame, effacer la frame sélectionné
-                setSelectedFrame(null);
-              }
-            }}
-          >
-            {design.sections.map((section, index) => {
-              return (
-                <option key={section.name} value={section.name}>
-                  {section.name}
-                </option>
-              );
-            })}
-          </select>
+        <form className="main-gui">
+          <div className="gui-el-wrapper">
+          <h1>{selectedTemplate.name}</h1>
 
-          <label>Select Frame</label>
-          <select
-            value={selectedFrame.frameName}
-            onChange={(e) => {
-              const selectedFrameName = e.target.value;
-              const selectedFrameToFind = selectedTemplate.frames.find(
-                (frame) => frame.frameName === selectedFrameName
-              );
-              setSelectedFrame(selectedFrameToFind);
-            }}
-          >
-            {selectedTemplate.frames.map((frame, index) => {
-              return (
-                <option key={frame.frameName} value={frame.frameName}>
-                  {frame.frameName}
-                </option>
-              );
-            })}
-          </select>
+            {/* <select
+              value={selectedTemplate.name}
+              onChange={(e) => {
+                // setTodownload(null);
+                const selectedSectionName = e.target.value;
+                const selectedSection = design.sections.find(
+                  (section) => section.name === selectedSectionName
+                );
+                setselectedTemplate(selectedSection);
+                if (selectedSection && selectedSection.frames.length > 0) {
+                  setSelectedFrame(selectedSection.frames[0]);
+                } else {
+                  // Si la nouvelle section n'a pas de frame, effacer la frame sélectionné
+                  setSelectedFrame(null);
+                }
+              }}
+            >
+              {design.sections.map((section, index) => {
+                return (
+                  <option key={section.name} value={section.name}>
+                    {section.name}
+                  </option>
+                );
+              })}
+            </select> */}
 
-          {
-            //Displaying correctly all the variables
-          }
-          {design.variables.map((element, index) => {
-            //console.log(element.name, selectedFrame);
-            if (
-              (element.name
-                .toLowerCase()
-                .includes(selectedTemplate.name.toLowerCase()) &&
-                element.name
-                  .toLowerCase()
-                  .includes(selectedFrame.frameName.toLowerCase())) ||
-              (element.name
-                .toLowerCase()
-                .includes(selectedTemplate.name.toLowerCase()) &&
-                element.name.toLowerCase().includes("all"))
-            ) {
-              return (
-                <label key={index}>
-                  {element.name.split(" - ")[1]}
-                  <textarea
-                    value={newText[index].valuesByMode}
-                    type={newText[index].type}
-                    onFocus={() =>
-                      handleInputFocus(element.name.split(" - ")[1])
-                    }
-                    onBlur={() =>
-                      handleInputFocus(element.name.split(" - ")[1], false)
-                    }
-                    onChange={(val) => {
-                      console.log("salut la val et l'index", index);
-                      let temp = [...newText];
-                      temp[index].valuesByMode = val.target.value;
-                      setNewText(temp);
-                      //console.log(temp);
-                    }}
-                  />
-                </label>
-              );
+            <select
+              className="select-wrapper"
+              value={selectedFrame.frameName}
+              onChange={(e) => {
+                const selectedFrameName = e.target.value;
+                const selectedFrameToFind = selectedTemplate.frames.find(
+                  (frame) => frame.frameName === selectedFrameName
+                );
+                setSelectedFrame(selectedFrameToFind);
+              }}
+            >
+              {selectedTemplate.frames.map((frame, index) => {
+                return (
+                  <option key={frame.frameName} value={frame.frameName}>
+                    {frame.frameName}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div className="gui-el-wrapper">
+            {
+              //Displaying correctly all the variables
             }
-          })}
 
-          <div>
-            <label htmlFor="picture">Picture:</label>
+            {design.variables.map((element, index) => {
+              //console.log(element.name, selectedFrame);
+              if (
+                (element.name
+                  .toLowerCase()
+                  .includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name
+                    .toLowerCase()
+                    .includes(selectedFrame.frameName.toLowerCase())) ||
+                (element.name
+                  .toLowerCase()
+                  .includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name.toLowerCase().includes("all"))
+              ) {
+                return (
+                  <div className="input-wrapper">
+                    <label key={index}>{element.name.split(" - ")[1]}</label>
+                    <textarea
+                      value={newText[index].valuesByMode}
+                      type={newText[index].type}
+                      onFocus={() =>
+                        handleInputFocus(element.name.split(" - ")[1])
+                      }
+                      onBlur={() =>
+                        handleInputFocus(element.name.split(" - ")[1], false)
+                      }
+                      onChange={(val) => {
+                        console.log("salut la val et l'index", index);
+                        let temp = [...newText];
+                        temp[index].valuesByMode = val.target.value;
+                        setNewText(temp);
+                        //console.log(temp);
+                      }}
+                    />
+                  </div>
+                );
+              }
+            })}
 
             {design.images.map((element, index) => {
               // console.log("mapping images", element);
@@ -414,8 +416,8 @@ const OneDesign = () => {
               ) {
                 uniqueImageNames.add(element.name); // Add the name to the set
                 return (
-                  <div key={element.name}>
-                    {element.name.split(" - ")[1]}
+                  <div className="input-wrapper" key={element.name}>
+                    <label>{element.name.split(" - ")[1]}</label>
                     <input
                       id="fileInput"
                       type="file"
@@ -427,38 +429,45 @@ const OneDesign = () => {
             })}
           </div>
 
-          <div>
-            <label>
-              Scale between 0,4 and 4:
-              <input
-                type="range"
-                value={scale}
-                min="0.5"
-                max="4"
-                step="0.5"
-                onChange={() => setScale(parseFloat(event.target.value))}
-              />
-            </label>
-            <p>Selected Scale: {scale}</p>
-          </div>
-
-          <button className="btn" onClick={generateDesign}>
+          <button className="btn generate-image" onClick={generateDesign}>
             Generate the image
           </button>
 
-          <br />
+          <div className="footer-wrapper">
+            <div className="input-wrapper resolution">
+              <label>Export Resolution: {scale}</label>
+              <div className="resolution-manager">
+                <div
+                  className={`scale-option ${scale === 4 ? "active" : ""}`}
+                  onClick={() => setScale(4)}
+                >
+                  High
+                </div>
+                <div
+                  className={`scale-option ${scale === 3 ? "active" : ""}`}
+                  onClick={() => setScale(3)}
+                >
+                  Medium
+                </div>
+                <div
+                  className={`scale-option ${scale === 2 ? "active" : ""}`}
+                  onClick={() => setScale(2)}
+                >
+                  Low
+                </div>
+              </div>
+            </div>
 
-          <button
-            className="btn"
-            onClick={(e) => {
-              e.preventDefault();
-              dowloadDesign(selectedFrame.frameId);
-            }}
-          >
-            Download {selectedFrame.frameName}
-          </button>
-
-          <br />
+            <button
+              className="btn"
+              onClick={(e) => {
+                e.preventDefault();
+                dowloadDesign(selectedFrame.frameId);
+              }}
+            >
+              Download Assets
+            </button>
+          </div>
 
           {isLoggedIn && user.status === "admin" && (
             <button className="btn" onClick={handleNotify}>
@@ -466,9 +475,9 @@ const OneDesign = () => {
             </button>
           )}
 
-          <button className="btn" onClick={handleDelete}>
+          {/* <button className="btn" onClick={handleDelete}>
             Delete
-          </button>
+          </button> */}
         </form>
 
         <div className="preview">

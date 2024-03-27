@@ -1,29 +1,45 @@
-.Navbar {
-	height: 4.5rem;
-	background-color: #80A8BA;
-	color: white;
-	padding: 0 2rem;
-	& a {
-		color: inherit;
-		text-decoration: none;
-	}
-	& li {
-		transition: all 1s ease-in-out;
-	}
-	& li:hover {
-		translate: 0 -0.25rem;
-		transition: all 200ms ease-in-out;
-	}
-	& a.active {
-		/* color: dodgerblue; */
-	}
 
-	& ul {
-		height: 100%;
-		display: flex;
-		gap: 1rem;
-		list-style: none;
-		justify-content: flex-end;
-		align-items: center;
-	}
+header {
+	display: flex;
+	align-items: space-between;
+	justify-content: space-between;
+	width: 100vw;
+	padding: 1rem;
+	position: fixed;
+	top: 0;
+	z-index: 10000;
+	mix-blend-mode: difference;
+	color: white;
+}
+
+
+header a {
+	color: white;
+
+}
+
+.logoWrapper {
+	height: max-content;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.Navbar {
+	display: flex;
+	width: 30ch;
+	gap: 1rem;
+}
+
+.Navbar:last-child {
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.Navbar nav {
+	display: flex;
 }
