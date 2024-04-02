@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import "./Navbar.css";
-import { useContext } from "react";
-import { AuthContext } from "../context/authContext";
 import Logo from "../assets/framework-log.svg";
+import { AuthContext } from "../context/authContext";
+import "./Navbar.css";
 const FRONTEND_URL =
   import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
 const Navbar = () => {
@@ -16,13 +15,13 @@ const Navbar = () => {
   return (
     <>
       <div className="Navbar">
-      {isLoggedIn && (
+        {isLoggedIn && (
           <>
             <nav>
               <NavLink to={"/Designs"}>Designs</NavLink>
             </nav>
-            </>
-      )}
+          </>
+        )}
       </div>
       <nav className="logoWrapper">
         <img
@@ -40,6 +39,9 @@ const Navbar = () => {
           </>
         )}
         <nav>
+          <NavLink to={"/brand"}>Brand</NavLink>
+        </nav>
+        <nav>
           <NavLink to={"/profile"}>Settings</NavLink>
         </nav>
 
@@ -52,7 +54,6 @@ const Navbar = () => {
         )}
         {isLoggedIn && (
           <>
-           
             {user.pictureUrl && (
               <img src={user.pictureUrl} style={{ width: "50px" }}></img>
             )}

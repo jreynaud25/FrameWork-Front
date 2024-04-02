@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  height: 100vh; /* Make the container take up the full height of the viewport */
+  /* margin-top: 50px; */
+  color: white;
+  background-color: black; /* Just for visualization */
+}
+
+.content {
+  display: flex;
+  flex: 1; /* Grow to fill the available space vertically */
+  overflow-y: auto; /* Enable vertical scrolling for content if needed */
+  height: 100%; /* Ensure the content div fills the remaining height */
+}
+
+.left {
+  flex: 0 0 25%; /* Take up 25% of the available width */
+  position: sticky;
+  top: 0; /* Stick to the top of the container */
+}
+
+.right {
+  flex: 1; /* Take up the remaining width */
+}
+
+a.link {
+  color: white;
+}
+
+.main {
+  border: 1px solid white; /* Add a solid white border at the bottom */
+  padding: 10px;
+}

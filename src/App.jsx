@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthForm from "./components/AuthForm";
 import CreateDesign from "./components/CreateDesign";
 import Layout from "./components/Layout";
+import Brand from "./pages/Brand";
 import Clients from "./pages/Clients";
 import Designs from "./pages/Designs";
 import IsAdmin from "./pages/IsAdmin";
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<AuthForm mode="Log in" />}></Route>
+          <Route path="/brand" element={<Brand />}></Route>
           <Route element={<IsAdmin />}>
             <Route path="/Clients" element={<Clients />}></Route>
           </Route>
