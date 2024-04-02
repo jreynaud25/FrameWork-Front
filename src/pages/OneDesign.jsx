@@ -482,7 +482,7 @@ const OneDesign = () => {
 
         <div className="preview">
           {!templateReady ? (
-            <p> {loadingMessage} </p>
+            <p className="loadingMessage"> {loadingMessage} </p>
           ) : (
             <>
               <div>
