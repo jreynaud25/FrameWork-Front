@@ -27,3 +27,8 @@
 a.link {
   color: white;
 }
+
+.main {
+  border: 1px solid white; /* Add a solid white border at the bottom */
+  padding: 10px;
+}

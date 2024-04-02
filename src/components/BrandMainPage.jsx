@@ -4,20 +4,29 @@ function BrandMainPage(props) {
   const { brandData } = props;
 
   const renderElements = (elements, level = 0) => {
-   // console.log("le level", level);
+    // console.log("le level", level);
     return elements.map((element, index) => (
-      <div key={index}>
-        <h1 id={element.name}>
-          {getTabulation(level)}
-          {element.name} {level} Type: {element.type}
-        </h1>
+      //<div key={index}>
+      <div
+        key={index}
+        className={element.name === "Sub-pages" ? `main` : ``}
+        id={element.nodeid}
+      >
         {element.characters && (
-          <p>
-            {getTabulation(level)}Characters: {element.characters}
+          <p id={`${element.nodeid}`}>
+            {getTabulation(level)}
+            {element.characters}
           </p>
         )}
+        {/* {element.name && (
+          <p>
+            {getTabulation(level)}
+            {element.name}
+          </p>
+        )} */}
         {element.elements && (
           <div>
+            {element.name}
             {getTabulation(level)}
             {renderElements(element.elements, level + 1)}
           </div>
@@ -34,9 +43,7 @@ function BrandMainPage(props) {
     <div>
       {brandData && (
         <div>
-          <p>Figma Name: {brandData.FigmaName}</p>
-          <p>Figma Id: {brandData.FigmaId}</p>
-          <div>{renderElements(brandData.elements)}</div>
+          <div className="main">{renderElements(brandData.elements)}</div>
         </div>
       )}
     </div>
