@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import "./Clients.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const Clients = () => {
@@ -53,7 +54,7 @@ const Clients = () => {
                 {client.username} {client.status} {client.email}{" "}
                 <button onClick={() => handleDelete(client._id)}>Delete</button>
               </p>
-              <img src={client.pictureUrl}></img>
+              <img className="client-logo" src={client.pictureUrl}></img>
             </div>
           );
         })}

@@ -9,6 +9,7 @@ const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
 //Retriving the design
 const OneDesign = () => {
   const [design, setDesign] = useState();
+  const [downloadReady, setDownloadReady] = useState(true);
   const [client, setClient] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [selectedTemplate, setselectedTemplate] = useState({});
@@ -79,6 +80,7 @@ const OneDesign = () => {
       scale,
       design.FigmaFileKey
     );
+    setDownloadReady(false);
     try {
       const response = await axios.get(
         `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
@@ -113,6 +115,8 @@ const OneDesign = () => {
         };
 
         xhr.send();
+        setDownloadReady(true);
+
       } catch (error) {
         console.error(error);
       }
@@ -302,33 +306,7 @@ const OneDesign = () => {
         }
         <form className="main-gui">
           <div className="gui-el-wrapper">
-          <h1>{selectedTemplate.name}</h1>
-
-            {/* <select
-              value={selectedTemplate.name}
-              onChange={(e) => {
-                // setTodownload(null);
-                const selectedSectionName = e.target.value;
-                const selectedSection = design.sections.find(
-                  (section) => section.name === selectedSectionName
-                );
-                setselectedTemplate(selectedSection);
-                if (selectedSection && selectedSection.frames.length > 0) {
-                  setSelectedFrame(selectedSection.frames[0]);
-                } else {
-                  // Si la nouvelle section n'a pas de frame, effacer la frame sélectionné
-                  setSelectedFrame(null);
-                }
-              }}
-            >
-              {design.sections.map((section, index) => {
-                return (
-                  <option key={section.name} value={section.name}>
-                    {section.name}
-                  </option>
-                );
-              })}
-            </select> */}
+            <h1>{selectedTemplate.name}</h1>
 
             <select
               className="select-wrapper"
@@ -465,7 +443,8 @@ const OneDesign = () => {
                 dowloadDesign(selectedFrame.frameId);
               }}
             >
-              Download Assets
+              Download Assets{" "}
+              <div className={`loader ${!downloadReady ? "" : "hidden"}`}></div>
             </button>
           </div>
 

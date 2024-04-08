@@ -45,10 +45,6 @@ function Brand() {
     return <p> loading...</p>;
   }
 
-  // const container = document.querySelector(".container");
-  // const topBarHeight = document.querySelector("header").offsetHeight;
-  // container.style.paddingTop = `${topBarHeight}px`;
-
   return (
     <div className="container">
       <p>{subDomain}</p>
