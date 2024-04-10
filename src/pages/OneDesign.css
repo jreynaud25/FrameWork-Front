@@ -21,6 +21,18 @@ h1 {
   padding-top: 3rem;
 }
 
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.preview p {
+  color: white;
+}
 .input-wrapper {
   display: flex;
   flex-direction: column;
