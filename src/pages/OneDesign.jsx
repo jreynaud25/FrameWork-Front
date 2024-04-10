@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { AuthContext } from "../context/authContext";
+import ExportDesign from "../components/ExportDesign";
 import "./OneDesign.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
@@ -20,8 +20,6 @@ const OneDesign = () => {
   const [svg, setSvg] = useState(null);
   const [templateReady, setTemplateReady] = useState(false);
   const [pictures, setPictures] = useState([]);
-  const [scale, setScale] = useState(4);
-  const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const { id, section, frame } = useParams();
   //console.log("bonjour render", id, section, frame);
   //-------------! Function to retrive datas !-------------
@@ -70,57 +68,6 @@ const OneDesign = () => {
     }
   };
 
-  //Download the design
-
-  const dowloadDesign = async (idToDownload) => {
-    console.log(
-      "Starting the download with params",
-      idToDownload,
-      scale,
-      design.FigmaFileKey
-    );
-    try {
-      const response = await axios.get(
-        `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}`,
-        {
-          headers: {
-            "X-Figma-Token": FIGMATOKEN,
-          },
-        }
-      );
-      //console.log(response.data.images);
-      // Get the URL directly from the images object
-      console.log("The URL of the image", response.data.images[idToDownload]);
-      sendPNGURLToBackend(response.data.images[idToDownload]);
-      try {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", response.data.images[idToDownload], true);
-        xhr.responseType = "blob";
-
-        xhr.onload = function () {
-          const blob = xhr.response;
-          // Create a link element
-          const link = document.createElement("a");
-          // Set link properties
-          link.href = window.URL.createObjectURL(blob);
-          link.download = `${design.FigmaName}-${selectedTemplate.name}-${selectedFrame.frameName}.png`;
-          // Append the link to the body and trigger the click event
-          document.body.appendChild(link);
-          link.click();
-
-          // Remove the link from the body
-          document.body.removeChild(link);
-        };
-
-        xhr.send();
-      } catch (error) {
-        console.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const dowloadTemplate = async (idToDownload) => {
     setLoadingMessage("Waiting for Figma response");
     try {
@@ -135,7 +82,7 @@ const OneDesign = () => {
           }
         )
         .then(async (res) => {
-          setLoadingMessage("Downloading informations from Figma response");
+          setLoadingMessage("Waiting image preview from Figma");
           console.log(
             "Download response : ",
             res.data.images[Object.keys(res.data.images)[0]]
@@ -152,29 +99,7 @@ const OneDesign = () => {
     }
   };
 
-  const sendPNGURLToBackend = async (urlToUpdate) => {
-    try {
-      // Send PNG URL data to the backend using axios.post
-      await axios.post(
-        `${BACKEND_URL}/api/designs/${id}`,
-        {
-          thumbnailURL: urlToUpdate,
-          selectedFrame: selectedFrame,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error sending SVG data to the backend:", error);
-    }
-  };
-
   //-------------! Function to make changes !-------------
-
-  //Function for the editing
 
   const generateDesign = async (event) => {
     setLoadingMessage("Starting Generating");
@@ -200,7 +125,7 @@ const OneDesign = () => {
           setLoadingMessage("Request sent to backend");
           setTimeout(() => {
             dowloadTemplate(selectedFrame.frameId);
-          }, 1000);
+          }, 2000);
 
           //Resetting the input
           const inputFile = document.getElementById("fileInput");
@@ -231,26 +156,6 @@ const OneDesign = () => {
       element.classList.toggle("active", hasFocus);
     }
   };
-
-  async function handleNotify(event) {
-    event.preventDefault();
-    console.log("Should notify", client[0], client[0]._id);
-
-    try {
-      const res = await axios
-        .get(`${BACKEND_URL}/api/designs/notify/${client[0]._id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
-        .then((res) => {
-          console.log("res", res);
-        });
-    } catch (error) {
-      console.log("there is an error", error);
-      //
-    }
-  }
 
   const handleDelete = async (event) => {
     event.preventDefault();
@@ -302,33 +207,7 @@ const OneDesign = () => {
         }
         <form className="main-gui">
           <div className="gui-el-wrapper">
-          <h1>{selectedTemplate.name}</h1>
-
-            {/* <select
-              value={selectedTemplate.name}
-              onChange={(e) => {
-                // setTodownload(null);
-                const selectedSectionName = e.target.value;
-                const selectedSection = design.sections.find(
-                  (section) => section.name === selectedSectionName
-                );
-                setselectedTemplate(selectedSection);
-                if (selectedSection && selectedSection.frames.length > 0) {
-                  setSelectedFrame(selectedSection.frames[0]);
-                } else {
-                  // Si la nouvelle section n'a pas de frame, effacer la frame sélectionné
-                  setSelectedFrame(null);
-                }
-              }}
-            >
-              {design.sections.map((section, index) => {
-                return (
-                  <option key={section.name} value={section.name}>
-                    {section.name}
-                  </option>
-                );
-              })}
-            </select> */}
+            <h1>{selectedTemplate.name}</h1>
 
             <select
               className="select-wrapper"
@@ -428,58 +307,15 @@ const OneDesign = () => {
               }
             })}
           </div>
-
-          <button className="btn generate-image" onClick={generateDesign}>
-            Generate the image
-          </button>
-
-          <div className="footer-wrapper">
-            <div className="input-wrapper resolution">
-              <label>Export Resolution: {scale}</label>
-              <div className="resolution-manager">
-                <div
-                  className={`scale-option ${scale === 4 ? "active" : ""}`}
-                  onClick={() => setScale(4)}
-                >
-                  High
-                </div>
-                <div
-                  className={`scale-option ${scale === 3 ? "active" : ""}`}
-                  onClick={() => setScale(3)}
-                >
-                  Medium
-                </div>
-                <div
-                  className={`scale-option ${scale === 2 ? "active" : ""}`}
-                  onClick={() => setScale(2)}
-                >
-                  Low
-                </div>
-              </div>
-            </div>
-
-            <button
-              className="btn"
-              onClick={(e) => {
-                e.preventDefault();
-                dowloadDesign(selectedFrame.frameId);
-              }}
-            >
-              Download Assets
-            </button>
-          </div>
-
-          {isLoggedIn && user.status === "admin" && (
-            <button className="btn" onClick={handleNotify}>
-              Notify Client
-            </button>
-          )}
-
-          {/* <button className="btn" onClick={handleDelete}>
-            Delete
-          </button> */}
+          <ExportDesign
+            selectedFrame={selectedFrame}
+            selectedTemplate={selectedTemplate}
+            design={design}
+          ></ExportDesign>
         </form>
-
+        <button className="btn generate-image" onClick={generateDesign}>
+          Generate the image
+        </button>
         <div className="preview">
           {!templateReady ? (
             <p className="loadingMessage"> {loadingMessage} </p>

@@ -1,38 +1,42 @@
 import React from "react";
 
 function BrandMainPage(props) {
-  const { brandData } = props;
-
+  const { brandData, brandImages } = props;
+  //console.log(brandImages.images);
   const renderElements = (elements, level = 0) => {
-    // console.log("le level", level);
-    return elements.map((element, index) => (
-      //<div key={index}>
-      <div
-        key={index}
-        className={element.name === "Sub-pages" ? `main` : ``}
-        id={element.nodeid}
-      >
-        {element.characters && (
-          <p id={`${element.nodeid}`}>
-            {getTabulation(level)}
-            {element.characters}
-          </p>
-        )}
-        {/* {element.name && (
-          <p>
-            {getTabulation(level)}
-            {element.name}
-          </p>
-        )} */}
-        {element.elements && (
-          <div>
-            {element.name}
-            {getTabulation(level)}
-            {renderElements(element.elements, level + 1)}
-          </div>
-        )}
-      </div>
-    ));
+    return elements.map((element, index) => {
+      //console.log("Looping on elements, i got", element.characters, element.nodeid)
+      console.log(brandImages.images[element.name]);
+      return (
+        <div
+          key={index}
+          className={element.name === "Sub-pages" ? `main` : ``}
+          id={element.nodeid}
+        >
+          {element.characters && (
+            <p id={`${element.nodeid}`}>
+              {getTabulation(level)}
+              {element.characters}
+            </p>
+          )}
+          {element.elements && element.name.length > 0 && (
+            <div>
+              {/* {element.name}
+              {element.nodeid} */}
+              {getTabulation(level)}
+              {!brandImages.images[element.name] &&
+                renderElements(element.elements, level + 1)}
+              {brandImages.images[element.name] && (
+                <img
+                  src={brandImages.images[element.name].url}
+                  alt={element.nodeid}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      );
+    });
   };
 
   const getTabulation = (level) => {
