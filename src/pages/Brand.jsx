@@ -33,6 +33,10 @@ function Brand() {
   useEffect(() => {
     const hostname = window.location.hostname;
     console.log("Le hostname", hostname);
+    if (hostname === "frame-work.app") {
+      navigate("/designs");
+      return;
+    }
     if (hostname != "localhost") {
       const parts = hostname.split(".");
       if (parts.length > 1 && parts[0] !== "www") {
