@@ -6,7 +6,7 @@ function BrandMainPage(props) {
   const renderElements = (elements, level = 0) => {
     return elements.map((element, index) => {
       //console.log("Looping on elements, i got", element.characters, element.nodeid)
-      console.log(brandImages.images[element.name]);
+      //console.log(brandImages.images[element.name]);
       return (
         <div
           key={index}

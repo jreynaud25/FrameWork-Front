@@ -16,8 +16,9 @@ function App() {
     <>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<AuthForm mode="Log in" />}></Route>
+          <Route path="/" element={<Brand />}></Route>
           <Route path="/brand" element={<Brand />}></Route>
+          <Route path="/brand/:figmaName" element={<Brand />}></Route>
           <Route element={<IsAdmin />}>
             <Route path="/Clients" element={<Clients />}></Route>
           </Route>

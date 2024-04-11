@@ -39,7 +39,7 @@ const Navbar = () => {
           </>
         )}
         <nav>
-          <NavLink to={"/brand"}>Brand</NavLink>
+          <NavLink to={"/"}>Brand</NavLink>
         </nav>
         <nav>
           <NavLink to={"/profile"}>Settings</NavLink>
