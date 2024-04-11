@@ -24,11 +24,14 @@ const Navbar = () => {
         )}
       </div>
       <nav className="logoWrapper">
-        <img
-          onClick={() => (window.location.href = FRONTEND_URL)}
-          src={Logo}
-          alt="Logo"
-        />
+        <NavLink to={"/Designs"}>
+          {" "}
+          <img
+            // onClick={() => (window.location.href = `${FRONTEND_URL}/Designs`)}
+            src={Logo}
+            alt="Logo"
+          />
+        </NavLink>
       </nav>
       <div className="Navbar">
         {!isLoggedIn && (

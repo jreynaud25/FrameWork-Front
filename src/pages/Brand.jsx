@@ -44,7 +44,7 @@ function Brand() {
       setsubDomain(figmaName);
     } else {
       console.log("Rien trouve donc défaut");
-      setsubDomain("3070");
+      navigate("/designs");
     }
   }, []);
 
