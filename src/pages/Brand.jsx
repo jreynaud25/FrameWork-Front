@@ -1,38 +1,58 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import BrandMainPage from "../components/BrandMainPage";
 import SideMenu from "../components/SideMenu";
 import "./Brand.css";
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 function Brand() {
-  const [subDomain, setsubDomain] = useState("");
+  const navigate = useNavigate();
+  const { figmaName } = useParams();
+  const [subDomain, setsubDomain] = useState(null);
   const [brandDatas, setBrandDatas] = useState(null);
 
   const [brandImages, setBrandImages] = useState(null);
+
   const getBrand = async () => {
-    console.log("get braaaaand");
+    //console.log("get braaaaand", figmaName);
     try {
-      const brandData = await axios.get(`${BACKEND_URL}/api/brand/all`, {});
+      const brandData = await axios.get(
+        `${BACKEND_URL}/api/brand/${subDomain}`,
+        {}
+      );
       setBrandDatas(brandData.data.elements[0]);
       setBrandImages(brandData.data.images[0]);
       console.log("les designs", brandData.data);
     } catch (error) {
-      console.log(error);
+      navigate("/notfound");
+      console.log("error ici", error);
     }
   };
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    console.log(hostname);
-    const parts = hostname.split(".");
-    if (parts.length > 1 && parts[0] !== "www") {
-      console.log("coucou", parts[0]);
-      setsubDomain(parts[0]);
+    console.log("Le hostname", hostname);
+    if (hostname != "localhost") {
+      const parts = hostname.split(".");
+      if (parts.length > 1 && parts[0] !== "www") {
+        console.log("coucou", parts[0]);
+        setsubDomain(parts[0]);
+      }
+    } else if (figmaName) {
+      console.log("the is a figmaename", figmaName);
+      setsubDomain(figmaName);
+    } else {
+      console.log("Rien trouve donc défaut");
+      setsubDomain("3070");
     }
-
-    getBrand();
   }, []);
+
+  useEffect(() => {
+    if (subDomain) {
+      getBrand();
+    }
+  }, [subDomain]);
 
   useEffect(() => {
     if (brandDatas) {
