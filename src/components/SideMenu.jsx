@@ -44,4 +44,3 @@ function SideMenu(props) {
 export default SideMenu;
 
 
-{/* <a href="#Motion - 5-color" class="link" style="margin-left: 20px;">Color</a> */}
