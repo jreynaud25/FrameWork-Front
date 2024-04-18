@@ -126,6 +126,7 @@ const OneDesign = () => {
           setTimeout(() => {
             dowloadTemplate(selectedFrame.frameId);
           }, 2000);
+          // Where are waiting 2 secondes to let figma apply the change on their servers
 
           //Resetting the input
           const inputFile = document.getElementById("fileInput");
@@ -151,7 +152,6 @@ const OneDesign = () => {
 
   const handleInputFocus = (svgId, hasFocus) => {
     const element = document.getElementById(svgId);
-    //console.log("element", element);
     if (element) {
       element.classList.toggle("active", hasFocus);
     }

@@ -64,11 +64,11 @@ const Designs = () => {
   //  console.log("lest clients", clients);
   return (
     <div>
-      {isLoggedIn && user.status === "admin" && (
+      {/* {isLoggedIn && user.status === "admin" && (
         <div className="btn">
           <Link to={"/Designs/create"}>Create Desgins </Link>
         </div>
-      )}
+      )} */}
 
       {user.status === "admin" &&
         clients.map((client) => {

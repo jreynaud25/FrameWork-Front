@@ -71,9 +71,13 @@ function Brand() {
   if (!brandDatas) {
     return <p> loading...</p>;
   }
-
+  //If the subDomain start with a number, we need to add a "_" before adding the class
   return (
-    <div className="container">
+    <div
+      className={`container ${
+        subDomain.match(/^\d/) ? `_${subDomain}` : subDomain
+      }`}
+    >
       <p>{subDomain}</p>
       <div className="content">
         <div className="left">
