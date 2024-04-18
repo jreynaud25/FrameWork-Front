@@ -1,119 +1,311 @@
-# OneDesign React Component
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 
-## Description
+<a name="readme-top"></a>
 
-The `OneDesign` component is a great React component used to display and interact with design data fetched from a backend. It allows users to select a design section and frame, input text data, upload pictures, adjust scale, generate a new design, and download the result.
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
-## Installation
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
 
-1. **Clone the repository:**
+<h3 align="center" id="readme-top">Frame-work.app Frontend</h3>
 
-   ```bash
-   git clone <repository-url>
+</div>
 
-   ```
+<!-- GETTING STARTED -->
 
-2. **Create a .env file at the root of your project.**
+## Getting Started
 
-Add the following environment variables:
-Set up environment variables:
-
-```bash
-.env
- VITE_BACKEND_URL=http://localhost:3000
- VITE_FIGMATOKEN=<your-figma-token>
+Before everything you have to create a .env file.
 
 ```
-
-```bash
-Copy code
-npm run dev
-Usage
-Components:
-Select Section:
-
+VITE_FIGMATOKEN =
+VITE_BACKEND_URL = https://framework-backend.fly.dev
+VITE_FRONTEND_URL =
 ```
 
-3. **The functions**
+## Designs Pages
 
-First the useEffect launch the getDesign() function.
+### 1. OneDesign.jsx
 
-```bash
-  useEffect(() => {
-    getDesign();
-  }, []);
+#### Function description
 
+That's the page that will allow the user to make editing.
+
+A useEffect call
+
+```js
+const getDesign = async () => {};
 ```
 
-The **_getDesign()_** function ake an axios get to the backend. And set 4 states (design/selectedTemplate/selectedFrame/newText)
+This function will retrieve the design the user want to edit. It does some checking to select automatically the "section" (equivalent of season) and the "frame" (equivalent of the image itself)
 
-It then trigger a second useEffect(), which launch the download of the preview svg on the right of the screen. Setting **setTemplateReady(false);** make the loading appear.
+And a second useEffect will call
 
-```bash
-  useEffect(() => {
-    setTemplateReady(false);
-    // console.log("le selected frame", selectedFrame.frameId);
-    dowloadTemplate(selectedFrame.frameId);
-  }, [selectedFrame]);
-
+```js
+const dowloadTemplate = async (idToDownload) => {};
 ```
 
-**downloadTemplate()** is retriving the svg from the figma API
+Which will make a Figma API call on this URL
 
-```bash
-
-
-  //Download the Template
-  const dowloadTemplate = async (idToDownload, setChange) => {
-    // console.log("Downloading the template with id", idToDownload);
-    try {
-      const res = await axios
-        .get(
-          `https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=1&svg_include_id=true&svg_include_node_id=true`,
-          {
-            headers: {
-              "X-Figma-Token": FIGMATOKEN,
-            },
-          }
-        )
-        .then(async (res) => {
-          const svgData = await fetch(
-            res.data.images[Object.keys(res.data.images)[0]]
-          ).then((res) => res.text());
-          setSvg(svgData);
-          setTemplateReady(true);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
+```js
+https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=svg&scale=1&svg_include_id=true&svg_include_node_id=true
 ```
 
-**The HTML returned**
+Because Figma API is slow, we're editing the loading message on every step
 
-Note that all the Sections and Frames of your figma file will be displayed.
+```js
+setLoadingMessage("Waiting for Figma response");
+setLoadingMessage("Waiting image preview from Figma");
+```
 
-**_Variables_**
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-Bellow you can see the code. Note that, every variable with the name of the frame and/or with the keywork "all" will be displayed. It's the same for the images
+#### HTML Rendering
 
-```bash
+It is very important to note that the rendering is mainly based on how the Figma file is done.
 
-   {design.variables.map((element, index) => {
-            //console.log(element.name, selectedFrame);
-            if (
-              (element.name
-                .toLowerCase()
-                .includes(selectedTemplate.name.toLowerCase()) &&
-                element.name
+So to make a variable editable on the correct Frame, you need to name it accordingly.
+
+```js
+            {design.variables.map((element, index) => {
+              //console.log(element.name, selectedFrame);
+              if (
+                (element.name
                   .toLowerCase()
-                  .includes(selectedFrame.frameName.toLowerCase())) ||
-              (element.name
-                .toLowerCase()
-                .includes(selectedTemplate.name.toLowerCase()) &&
-                element.name.toLowerCase().includes("all"))
-            )
+                  .includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name
+                    .toLowerCase()
+                    .includes(selectedFrame.frameName.toLowerCase())) ||
+                (element.name
+                  .toLowerCase()
+                  .includes(selectedTemplate.name.toLowerCase()) &&
+                  element.name.toLowerCase().includes("all"))
+              ) {
+                return ()
+```
+
+It will check 3 things:
+
+- The name of the variable contain the name of the Section/Template `.includes(selectedTemplate.name.toLowerCase()) `
+- The name of the variable contain the name of the Frame/Season `.includes(selectedFrame.frameName.toLowerCase()) `
+- Or if it has the selectedTemplate name and "All" `.includes(selectedTemplate.name.toLowerCase()) && element.name.toLowerCase().includes("all")`
+
+On the screeshot bellow you can see what it looks like in the database
+<img src="./public/VarExemples.png" alt="Logo">
+<br/>
+
+<img src="./public/VarExemplesInFigma.png" alt="Logo">
+<br/>
+
+The name displayed in the interface will be the Word right after the " - " in the name.
+`                   <label key={index}>{element.name.split(" - ")[1]}</label>`
+
+So for the exemples above, the name will be "Brands" and "Date"
+
+If you made a mistake, you can simply edit your Figma File, launch the plugin and click on "Update"
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### 2. ExportDesign
+
+It's a components that handle everyting for the exporting / downloading
+
+It got two main functions, the first will call the second.
+
+```js
+const dowloadDesign = async (idToDownload) => {};
+const sendPNGURLToBackend = async (urlToUpdate) => {};
+```
+
+Whenever the client is ready to download the design, the function will call the following URL
 
 ```
+https://api.figma.com/v1/images/${design.FigmaFileKey}?ids=${idToDownload}&format=png&scale=${scale}
+```
+
+Which will return a AWS url where the image is downloadable.
+
+We will then store the URL in our database, to use later as the preview.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Brand Pages
+
+Here you can see how the brand page is made.
+
+There is two components
+
+```js
+BrandMainPage.jsx;
+SideMenu.jsx;
+```
+
+But beside that on `Brand.jsx` you'll find this rendering
+
+```js
+<div
+  className={`container ${
+    subDomain.match(/^\d/) ? `_${subDomain}` : subDomain
+  }`}
+></div>
+```
+
+It add a classname equal to the subdomain. This way you can make the CSS specific for every client/subdomain.
+Because a className selector in CSS can't start with a number, we made a regex to add a \_ before the name.
+
+```css
+/* Setting style for the subdomains */
+.damdam {
+  background-color: aqua;
+}
+
+._3070 {
+  color: black;
+  background-color: #f5f5f5;
+
+  & .main {
+    background-color: #ffff;
+  }
+}
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### SideMenu.jsx
+
+Very simple, it loops on the element, and for every element called "Sub-pages" or start with "Page" displays it, and make it a href.
+The name of the `<a>` will be be equal to `element.elements[0]?.characters`
+
+```js
+if (element.name === "Sub-pages" || element.name.startsWith("Page")) {
+  return (
+    <li key={index}>
+      <a
+        href={`#${element.nodeid}`}
+        className="link"
+        style={{ marginLeft: `${parentIds.length * 20}px` }}
+      >
+        {element.elements[0]?.characters}
+      </a>
+      {element.elements && (
+        <ul>
+          {renderMenuItems(element.elements, [
+            ...parentIds,
+            element.elements[0]?.characters,
+          ])}
+        </ul>
+      )}
+    </li>
+  );
+}
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### BrandMainPage.jsx
+
+The render is quiete simple, it call a recursive function that go into the document stored in the database.
+
+```js
+return (
+  <div>
+    {brandData && (
+      <div>
+        <div className="main">{renderElements(brandData.elements)}</div>
+      </div>
+    )}
+  </div>
+);
+```
+
+```js
+const renderElements = (elements, level = 0) => {
+  return elements.map((element, index) => {
+    console.log("Looping on elements, i got", element, element.nodeid);
+    //console.log(brandImages.images[element.name]);
+    return (
+      <div
+        key={index}
+        className={element.name === `Sub-pages` ? `subpage${level}` : ``}
+        id={element.nodeid}
+      >
+        {element.characters && (
+          <p id={`${element.nodeid}`}>
+            {getTabulation(level)}
+            {element.characters}
+          </p>
+        )}
+        {element.elements && element.name.length > 0 && (
+          <div>
+            {/* {element.name}
+              {element.nodeid} */}
+            {getTabulation(level)}
+            {!brandImages.images[element.name] &&
+              renderElements(element.elements, level + 1)}
+            {brandImages.images[element.name] && (
+              <img
+                src={brandImages.images[element.name].url}
+                alt={element.nodeid}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    );
+  });
+};
+```
+
+To make thing beautiful, a getTabulation() function exists to add tabulation everytime you go deeper in the page.
+
+```js
+const getTabulation = (level) => {
+  return Array(level).fill("\u00A0\u00A0\u00A0\u00A0").join(""); // You can adjust the number of spaces as needed
+};
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTACT -->
+
+## Contact
+
+JRJR - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+
+Project Link: [https://github.com/jreynaud25/Framework-backend](https://github.com/jreynaud25/Framework-backend)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+[contributors-shield]: https://img.shields.io/github/contributors/damdamtouch/Framework-generator.svg?style=for-the-badge
+[contributors-url]: https://github.com/damdamtouch/Framework-generator/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/damdamtouch/Framework-generator.svg?style=for-the-badge
+[forks-url]: https://github.com/damdamtouch/Framework-generator/network/members
+[stars-shield]: https://img.shields.io/github/stars/damdamtouch/Framework-generator.svg?style=for-the-badge
+[stars-url]: https://github.com/damdamtouch/Framework-generator/stargazers
+[issues-shield]: https://img.shields.io/github/issues/damdamtouch/Framework-generator.svg?style=for-the-badge
+[issues-url]: https://github.com/damdamtouch/Framework-generator/issues
+[license-shield]: https://img.shields.io/github/license/damdamtouch/Framework-generator.svg?style=for-the-badge
+[license-url]: https://github.com/damdamtouch/Framework-generator/blob/master/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/linkedin_username
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
+[Vue-url]: https://vuejs.org/
+[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
+[Angular-url]: https://angular.io/
+[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
+[Svelte-url]: https://svelte.dev/
+[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
+[Laravel-url]: https://laravel.com
+[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-url]: https://getbootstrap.com
+[Typescript.com]: https://img.shields.io/badge/Typescript-0769AD?style=for-the-badge&logo=jquery&logoColor=white
+[Typescript-url]: https://www.typescriptlang.org

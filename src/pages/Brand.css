@@ -3,7 +3,7 @@
   flex-direction: column; /* Stack children vertically */
   height: 100vh; /* Make the container take up the full height of the viewport */
   /* margin-top: 50px; */
-  color: white;
+  /* color: white; */
   background-color: black; /* Just for visualization */
 }
 
@@ -25,10 +25,39 @@
 }
 
 a.link {
-  color: white;
+  /* color: white; */
 }
 
 .main {
   border: 1px solid white; /* Add a solid white border at the bottom */
   padding: 10px;
+}
+
+/* Setting style for the subdomains */
+.damdam {
+  background-color: aqua;
+}
+
+._3070 {
+  color: black;
+  background-color: #f5f5f5;
+
+  & .main {
+    background-color: #ffff;
+  }
+  & .subpage1 {
+    background-color: #b5b5b5;
+    padding: 10px;
+    margin: 10px;
+  }
+
+  & .subpage2 {
+    background-color: #cecece;
+    padding: 10px;
+  }
+
+  & .subpage3 {
+    background-color: #e3e1e1;
+    padding: 10px;
+  }
 }
