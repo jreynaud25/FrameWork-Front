@@ -35,7 +35,7 @@ a.link {
 
 /* Setting style for the subdomains */
 .damdam {
-  background-color: aqua;
+  background-color: aqua !important;
 }
 
 ._3070 {

@@ -12,7 +12,8 @@ function Brand() {
   const { figmaName } = useParams();
   const [subDomain, setsubDomain] = useState(null);
   const [brandDatas, setBrandDatas] = useState(null);
-  const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
+  const { user, isLoading, authenticateUser } = useContext(AuthContext);
+  console.log("is loading", isLoading);
 
   const [brandImages, setBrandImages] = useState(null);
   console.log("user in brand", user);
@@ -30,13 +31,7 @@ function Brand() {
         brandData.data.elements[0].isPrivate &&
         (!user || user?.username !== subDomain)
       ) {
-        // console.log(
-        //   "Probleme, is private and username doesnt match",
-        //   brandData.data.elements[0].isPrivate,
-        //   user?.username,
-        //   subDomain
-        // );
-
+        console.log("ici on a ", user);
         navigate("/auth/login");
       } else {
         setBrandDatas(brandData.data.elements[0]);
@@ -72,23 +67,13 @@ function Brand() {
   }, []);
 
   useEffect(() => {
-    if (subDomain) {
+    if (subDomain && !isLoading) {
       getBrand();
     }
-  }, [subDomain]);
-
-  useEffect(() => {
-    if (brandDatas) {
-      const container = document.querySelector(".container");
-      const topBarHeight = document.querySelector("header").offsetHeight;
-      const sidebar = document.querySelector(".left");
-      const padding = sidebar ? `${topBarHeight}px` : "0";
-      container.style.paddingTop = padding;
-    }
-  }, [brandDatas]);
+  }, [subDomain, isLoading]);
 
   if (!brandDatas) {
-    return <p> loading...</p>;
+    return <p> Loading...</p>;
   }
   //If the subDomain start with a number, we need to add a "_" before adding the class
   return (

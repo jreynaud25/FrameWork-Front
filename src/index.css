@@ -1,7 +1,6 @@
-
 @font-face {
   font-family: "Plain";
-  src: url(./assets/Plain-Regular.otf) 
+  src: url(./assets/Plain-Regular.otf);
 }
 
 body {
@@ -23,9 +22,13 @@ a {
 }
 main {
   min-height: 100svh;
-
+  margin-top: 3rem;
 }
 
 footer {
   display: none;
+}
+
+.container {
+  background-color: white;
 }
