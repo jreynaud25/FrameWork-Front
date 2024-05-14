@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BrandMainPage from "../components/BrandMainPage";
 import SideMenu from "../components/SideMenu";
+import { AuthContext } from "../context/authContext";
 import "./Brand.css";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
@@ -11,9 +12,10 @@ function Brand() {
   const { figmaName } = useParams();
   const [subDomain, setsubDomain] = useState(null);
   const [brandDatas, setBrandDatas] = useState(null);
+  const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
 
   const [brandImages, setBrandImages] = useState(null);
-
+  console.log("user in brand", user);
   const getBrand = async () => {
     //console.log("get braaaaand", figmaName);
     try {
@@ -21,8 +23,25 @@ function Brand() {
         `${BACKEND_URL}/api/brand/${subDomain}`,
         {}
       );
-      setBrandDatas(brandData.data.elements[0]);
-      setBrandImages(brandData.data.images[0]);
+
+      console.log("Checking if private", brandData.data.elements[0].isPrivate);
+      console.log("checking user", user);
+      if (
+        brandData.data.elements[0].isPrivate &&
+        (!user || user?.username !== subDomain)
+      ) {
+        // console.log(
+        //   "Probleme, is private and username doesnt match",
+        //   brandData.data.elements[0].isPrivate,
+        //   user?.username,
+        //   subDomain
+        // );
+
+        navigate("/auth/login");
+      } else {
+        setBrandDatas(brandData.data.elements[0]);
+        setBrandImages(brandData.data.images[0]);
+      }
       console.log("les designs", brandData.data);
     } catch (error) {
       navigate("/notfound");
