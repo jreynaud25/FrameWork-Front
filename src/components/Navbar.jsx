@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "../assets/framework-log.svg";
 import { AuthContext } from "../context/authContext";
 import "./Navbar.css";
@@ -7,10 +7,13 @@ const FRONTEND_URL =
   import.meta.env.VITE_FRONTEND_URL || "https://frame-work.app";
 const Navbar = () => {
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
+  const navigate = useNavigate(); // useNavigate hook
+
   console.log(user);
   const logout = () => {
     localStorage.removeItem("token");
     authenticateUser();
+    navigate("/auth/login");
   };
   return (
     <>
