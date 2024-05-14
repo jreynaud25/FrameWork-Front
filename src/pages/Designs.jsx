@@ -64,17 +64,12 @@ const Designs = () => {
   //  console.log("lest clients", clients);
   return (
     <div>
-      {/* {isLoggedIn && user.status === "admin" && (
-        <div className="btn">
-          <Link to={"/Designs/create"}>Create Desgins </Link>
-        </div>
-      )} */}
 
       {user.status === "admin" &&
         clients.map((client) => {
           return (
-            <div>
-              <h2 key={client.username}> {client.username}</h2>
+            <div className="design-list-wrapper">
+              <h5 key={client.username}> {client.username}</h5>
               {designs.map((design) => {
                 if (design.usedBy.includes(client._id)) {
                   return (

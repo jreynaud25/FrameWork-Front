@@ -44,8 +44,8 @@ const Clients = () => {
   };
   return (
     <div>
-      <h2>Clients:</h2>
       <div className="container">
+      <h2>Clients:</h2>
         La list de clients
         {clients.map((client) => {
           return (
