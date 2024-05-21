@@ -311,6 +311,7 @@ const OneDesign = () => {
             selectedFrame={selectedFrame}
             selectedTemplate={selectedTemplate}
             design={design}
+            client={client}
           ></ExportDesign>
         </form>
         <button className="btn generate-image" onClick={generateDesign}>
