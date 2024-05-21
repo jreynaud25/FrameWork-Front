@@ -9,7 +9,7 @@ function ExportDesign(props) {
   const [downloadReady, setDownloadReady] = useState(true);
   const { user, isLoggedIn } = useContext(AuthContext);
   const { id } = useParams();
-  const { selectedFrame, selectedTemplate, design } = props;
+  const { selectedFrame, selectedTemplate, design, client } = props;
   const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
   const BACKEND_URL =
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
