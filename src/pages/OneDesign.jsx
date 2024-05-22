@@ -33,7 +33,7 @@ const OneDesign = () => {
           },
         })
         .then((res) => {
-          console.log("succegul retrieved from db", res.data);
+          //console.log("succegul retrieved from db", res.data);
           setDesign(res.data);
           setClient(res.data.usedBy);
 
@@ -83,10 +83,10 @@ const OneDesign = () => {
         )
         .then(async (res) => {
           setLoadingMessage("Waiting image preview from Figma");
-          console.log(
-            "Download response : ",
-            res.data.images[Object.keys(res.data.images)[0]]
-          );
+          //  console.log(
+          //   "Download response : ",
+          //   res.data.images[Object.keys(res.data.images)[0]]
+          // );
           newThumbnailURL = res.data.images[Object.keys(res.data.images)[0]];
           const svgData = await fetch(
             res.data.images[Object.keys(res.data.images)[0]]
@@ -141,7 +141,7 @@ const OneDesign = () => {
 
   //-------------! Handling functions !-------------
   function handleFile(event, name) {
-    console.log(event.target.files);
+    //console.log(event.target.files);
     const newPicture = {
       name: name,
       file: event.target.files[0],
@@ -189,9 +189,11 @@ const OneDesign = () => {
   }, []);
 
   useEffect(() => {
-    setTemplateReady(false);
-    // console.log("le selected frame", selectedFrame.frameId);
-    dowloadTemplate(selectedFrame.frameId);
+    if (design) {
+      setTemplateReady(false);
+      // console.log("le selected frame", selectedFrame.frameId);
+      dowloadTemplate(selectedFrame.frameId);
+    }
   }, [selectedFrame]);
 
   if (!design) {
@@ -249,8 +251,8 @@ const OneDesign = () => {
                   element.name.toLowerCase().includes("all"))
               ) {
                 return (
-                  <div className="input-wrapper">
-                    <label key={index}>{element.name.split(" - ")[1]}</label>
+                  <div key={index} className="input-wrapper">
+                    <label>{element.name.split(" - ")[1]}</label>
                     <textarea
                       value={newText[index].valuesByMode}
                       type={newText[index].type}

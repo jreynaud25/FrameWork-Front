@@ -11,7 +11,6 @@ import OneDesign from "./pages/OneDesign";
 import ProtectedRoute from "./pages/ProtectedRoute";
 
 function App() {
-  console.log(window.location.host);
   return (
     <>
       <Routes>

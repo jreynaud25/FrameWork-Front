@@ -10,7 +10,7 @@ const Clients = () => {
   const fetchClients = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/client`);
-      console.log("les clients", response);
+    //  console.log("les clients", response);
       setClients(response.data);
     } catch (error) {
       console.log(error);
@@ -28,7 +28,7 @@ const Clients = () => {
       return;
     } //Confirmation
 
-    console.log("should delete client with id:", id);
+    //console.log("should delete client with id:", id);
     try {
       const response = await axios.delete(`${BACKEND_URL}/api/client/${id}`, {
         headers: {
@@ -45,7 +45,7 @@ const Clients = () => {
   return (
     <div>
       <div className="container">
-      <h2>Clients:</h2>
+        <h2>Clients:</h2>
         La list de clients
         {clients.map((client) => {
           return (
@@ -58,10 +58,8 @@ const Clients = () => {
             </div>
           );
         })}
-      </div>
-      <div>
         <NavLink to={"/auth/create"}>
-          <button className="btn">Ajouter Client </button>
+          <button className="button">Ajouter Client </button>
         </NavLink>
       </div>
     </div>

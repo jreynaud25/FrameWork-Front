@@ -13,10 +13,10 @@ function Brand() {
   const [subDomain, setsubDomain] = useState(null);
   const [brandDatas, setBrandDatas] = useState(null);
   const { user, isLoading, authenticateUser } = useContext(AuthContext);
-  console.log("is loading", isLoading);
+  //console.log("is loading", isLoading);
 
   const [brandImages, setBrandImages] = useState(null);
-  console.log("user in brand", user);
+  //console.log("user in brand", user);
   const getBrand = async () => {
     //console.log("get braaaaand", figmaName);
     try {
@@ -25,19 +25,19 @@ function Brand() {
         {}
       );
 
-      console.log("Checking if private", brandData.data.elements[0].isPrivate);
-      console.log("checking user", user);
+      //console.log("Checking if private", brandData.data.elements[0].isPrivate);
+      //console.log("checking user", user);
       if (
         brandData.data.elements[0].isPrivate &&
         (!user || user?.username !== subDomain)
       ) {
-        console.log("ici on a ", user);
+       // console.log("ici on a ", user);
         navigate("/auth/login");
       } else {
         setBrandDatas(brandData.data.elements[0]);
         setBrandImages(brandData.data.images[0]);
       }
-      console.log("les designs", brandData.data);
+      //console.log("les designs", brandData.data);
     } catch (error) {
       navigate("/notfound");
       console.log("error ici", error);
@@ -46,7 +46,7 @@ function Brand() {
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    console.log("Le hostname", hostname);
+    // console.log("Le hostname", hostname);
     if (hostname === "frame-work.app") {
       navigate("/designs");
       return;
@@ -54,14 +54,14 @@ function Brand() {
     if (hostname != "localhost") {
       const parts = hostname.split(".");
       if (parts.length > 1 && parts[0] !== "www") {
-        console.log("coucou", parts[0]);
+        //console.log("coucou", parts[0]);
         setsubDomain(parts[0]);
       }
     } else if (figmaName) {
-      console.log("the is a figmaename", figmaName);
+      //console.log("the is a figmaename", figmaName);
       setsubDomain(figmaName);
     } else {
-      console.log("Rien trouve donc défaut");
+      // console.log("Rien trouve donc défaut");
       navigate("/designs");
     }
   }, []);

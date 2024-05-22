@@ -14,7 +14,7 @@ const AuthForm = ({ mode }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [response, setResponse] = useState("");
-  const [pictures, setPictures] = useState([]);
+  const [picture, setPicture] = useState([]);
   const [clients, setClients] = useState([]);
 
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const AuthForm = ({ mode }) => {
 
   if (mode === "Loggedin") {
     const token = searchParams.get("token");
-    console.log("should save the token received as param", token);
+    //console.log("should save the token received as param", token);
     localStorage.setItem("token", token);
 
     // setResponse("ok");
@@ -58,22 +58,31 @@ const AuthForm = ({ mode }) => {
       const userToLogin = { username, password, email };
 
       if (mode === "Create") {
+        // Validate username and email fields
+        if (!username || !email) {
+          setError("Username or E-mail cannot be empty");
+          return;
+        }
+
         console.log(
           "bonjour je dois creer cet user",
-          userToLogin,
-          pictures.file,
-          pictures.file.name
+          userToLogin.username,
+          userToLogin.email
         );
         const fd = new FormData();
         fd.append("username", JSON.stringify(userToLogin.username));
         fd.append("email", JSON.stringify(userToLogin.email));
-        fd.append("pictures", pictures.file, pictures.file.name);
+        if (picture.length > 0) {
+          console.log("there is picture", picture);
+          fd.append("picture", picture.file, picture.file.name);
+        }
 
         console.log("le fd total", fd);
         // const response = await axios.post(
         //   `${BACKEND_URL}/api/auth/signup`,
         //   userToLogin
         // );
+
         const response = await axios.post(
           `${BACKEND_URL}/api/auth/signup`,
           fd,
@@ -85,7 +94,11 @@ const AuthForm = ({ mode }) => {
         );
 
         console.log("response", response);
-        navigate("/Clients");
+        setResponse(response.statusText);
+        // Wait 500ms before navigating
+        setTimeout(() => {
+          navigate("/Clients");
+        }, 500);
       } else if (mode === "Update") {
         console.log("goind to patch", userToLogin);
         const response = await axios.patch(
@@ -135,15 +148,15 @@ const AuthForm = ({ mode }) => {
   };
 
   function handleFile(event, name) {
-    console.log(event.target.files);
-    console.log("hndling file", event.target.files);
-    console.log("name", event.target.files[0].name);
+    // console.log(event.target.files);
+    //console.log("hndling file", event.target.files);
+    //console.log("name", event.target.files[0].name);
     const newPicture = {
       name: event.target.files[0].name,
       file: event.target.files[0],
     };
-    // Add the new picture to the existing pictures array
-    setPictures(newPicture);
+    // Add the new picture to the existing picture array
+    setPicture(newPicture);
   }
 
   useEffect(() => {
@@ -172,37 +185,36 @@ const AuthForm = ({ mode }) => {
   return (
     <div className="login-wrapper">
       <form className="login-container" onSubmit={handleSubmit}>
-          {mode !== "Update" && (
-            <label className="title" htmlFor="username">
-            </label>
-          )}
-          {mode == "Update" && <label>Edit Profile</label>}
+        {mode !== "Update" && (
+          <label className="title" htmlFor="username"></label>
+        )}
+        {mode == "Update" && <label>Edit Profile</label>}
 
-          {mode !== "Update" && (
-            <input
-              type="text"
-              value={username}
-              placeholder="E-mail"
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          )}
+        {mode !== "Update" && (
+          <input
+            type="text"
+            value={username}
+            placeholder="Username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        )}
         {isLoggedIn && (
           <>
-              <label htmlFor="email">email: </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              Profile picture
-              <input id="fileInput" type="file" onChange={handleFile} />
+            {/* <label htmlFor="email">E-mail : </label> */}
+            <input
+              type="email"
+              value={email}
+              placeholder="E-mail"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            Profile picture
+            <input id="fileInput" type="file" onChange={handleFile} />
           </>
         )}
 
         {mode !== "Create" && mode !== "Reset" && (
           <div>
-            <label className="title" htmlFor="password">
-            </label>
+            <label className="title" htmlFor="password"></label>
             <input
               type="password"
               placeholder="Password"
@@ -219,7 +231,7 @@ const AuthForm = ({ mode }) => {
 
         <p style={{ color: "red" }}>{error}</p>
         <p style={{ color: "green" }}>{response}</p>
-        <button className="btn">{mode}</button>
+        <button>{mode}</button>
       </form>
     </div>
   );
