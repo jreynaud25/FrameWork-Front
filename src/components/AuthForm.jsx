@@ -14,7 +14,7 @@ const AuthForm = ({ mode }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [response, setResponse] = useState("");
-  const [picture, setPicture] = useState([]);
+  const [picture, setPicture] = useState();
   const [clients, setClients] = useState([]);
 
   const navigate = useNavigate();
@@ -72,16 +72,11 @@ const AuthForm = ({ mode }) => {
         const fd = new FormData();
         fd.append("username", JSON.stringify(userToLogin.username));
         fd.append("email", JSON.stringify(userToLogin.email));
-        if (picture.length > 0) {
-          console.log("there is picture", picture);
+        if (picture) {
           fd.append("picture", picture.file, picture.file.name);
         }
 
         console.log("le fd total", fd);
-        // const response = await axios.post(
-        //   `${BACKEND_URL}/api/auth/signup`,
-        //   userToLogin
-        // );
 
         const response = await axios.post(
           `${BACKEND_URL}/api/auth/signup`,
