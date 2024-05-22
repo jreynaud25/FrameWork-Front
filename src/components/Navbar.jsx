@@ -9,7 +9,7 @@ const Navbar = () => {
   const { user, isLoggedIn, authenticateUser } = useContext(AuthContext);
   const navigate = useNavigate(); // useNavigate hook
 
-  console.log(user);
+  //console.log(user);
   const logout = () => {
     localStorage.removeItem("token");
     authenticateUser();

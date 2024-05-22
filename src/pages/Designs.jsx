@@ -42,7 +42,7 @@ const Designs = () => {
         },
       });
       setDesigns(allDesigns.data);
-      console.log("les designs", allDesigns.data);
+      // console.log("les designs", allDesigns.data);
     } catch (error) {
       console.log(error);
     }
@@ -64,35 +64,32 @@ const Designs = () => {
   //  console.log("lest clients", clients);
   return (
     <div>
-
       {user.status === "admin" &&
         clients.map((client) => {
           return (
-            <div className="design-list-wrapper">
-              <h5 key={client.username}> {client.username}</h5>
+            <div key={client.username} className="design-list-wrapper">
+              <h5> {client.username}</h5>
               {designs.map((design) => {
                 if (design.usedBy.includes(client._id)) {
                   return (
-                    <>
-                      <Link key={design._id} to={design._id}>
+                    <div key={design._id}>
+                      <Link to={design._id}>
                         <div className="btn">{design.FigmaName}</div>
                       </Link>
                       {design.sections.map((section) => {
                         //console.log("bonjours", section);
                         return (
-                          <>
-                            <Link
-                              key={section._id}
-                              to={`${design._id}/${section.name}`}
-                            >
+                          <div key={section._id}>
+                            <Link to={`${design._id}/${section.name}`}>
                               <div className="btn title">{section.name}</div>
                             </Link>
-                            <div className="images-wrapper">
+                            <div key={section.name} className="images-wrapper">
                               {section.frames.map((frame) => {
                                 return (
                                   <Link
                                     to={`${design._id}/${section.name}/${frame.frameName}`}
                                     className="image-wrapper"
+                                    key={frame._id}
                                   >
                                     <p>{frame.frameName}</p>
                                     <img src={frame.thumbnailURL}></img>
@@ -100,10 +97,10 @@ const Designs = () => {
                                 );
                               })}
                             </div>
-                          </>
+                          </div>
                         );
                       })}
-                    </>
+                    </div>
                   );
                 }
               })}
