@@ -5,12 +5,13 @@ import ExportDesign from "../components/ExportDesign";
 import "./OneDesign.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
-
+let fd = new FormData();
 //Retriving the design
 const OneDesign = () => {
   const [design, setDesign] = useState();
   const [client, setClient] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
+  const [uploadMessages, setUploadMessages] = useState({});
   const [selectedTemplate, setselectedTemplate] = useState({});
   const [selectedFrame, setSelectedFrame] = useState({});
   let newThumbnailURL = "";
@@ -105,14 +106,17 @@ const OneDesign = () => {
     setLoadingMessage("Starting Generating");
     event.preventDefault();
     setTemplateReady(false);
-    const fd = new FormData();
-    console.log("Je vais generer avec", newText);
 
-    console.log("the type of ", typeof newText);
+    //console.log("Je vais generer avec", newText);
+    //console.log("And with images", pictures);
+
+    //console.log("the type of ", typeof newText);
     fd.append("newText", JSON.stringify(newText));
     pictures.forEach((picture, index) => {
       fd.append("pictures", picture.file, picture.name);
     });
+
+    console.log("The FormDate", fd);
     try {
       const res = await axios
         .patch(`${BACKEND_URL}/api/designs/${id}`, fd, {
@@ -127,27 +131,83 @@ const OneDesign = () => {
             dowloadTemplate(selectedFrame.frameId);
           }, 2000);
           // Where are waiting 2 secondes to let figma apply the change on their servers
-
-          //Resetting the input
-          const inputFile = document.getElementById("fileInput");
-          if (inputFile) {
-            inputFile.value = ""; // Reseet the value as an empty string
-          }
         });
+
+      //Resetting the input
+      const inputFile = document.getElementById("fileInput");
+      if (inputFile) {
+        inputFile.value = "";
+        setPictures([]); // Reseet the value as an empty string
+      }
+      fd = new FormData();
     } catch (error) {
       console.log(error);
     }
   };
 
   //-------------! Handling functions !-------------
+  // function handleFile(event, name) {
+  //   console.log(event.target.files);
+  //   console.log("Image Selected");
+  //   const newPicture = {
+  //     name: name,
+  //     file: event.target.files[0],
+  //   };
+  //   // Add the new picture to the existing pictures array
+  //   setPictures((prevPictures) => [...prevPictures, newPicture]);
+  // }
+
+  const setUploadMessage = (name, message) => {
+    setUploadMessages((prevMessages) => ({
+      ...prevMessages,
+      [name]: message,
+    }));
+  };
+
   function handleFile(event, name) {
-    //console.log(event.target.files);
-    const newPicture = {
-      name: name,
-      file: event.target.files[0],
+    console.log("Image Selected");
+    const file = event.target.files[0];
+
+    // Vérifier si un fichier est sélectionné
+    if (!file) {
+      console.error("No file selected.");
+      return;
+    }
+
+    // Vérifier la taille du fichier (par exemple, maximum 5 Mo)
+    const maxFileSizeInBytes = 5 * 1024 * 1024; // 5 MB en bytes
+    if (file.size > maxFileSizeInBytes) {
+      console.error("File is too large. Maximum size is 5MB.");
+      return;
+    }
+
+    // Vérifier les dimensions de l'image
+    const img = new Image();
+    img.onload = () => {
+      if (img.width > 4096 || img.height > 4096) {
+        console.error(
+          "Image dimensions exceed the maximum allowed size of 4096x4096 pixels.", name
+        );
+        setUploadMessage(name, "Image exceed 4096x4096 pixels.");
+      } else {
+        setUploadMessage("");
+        const newPicture = {
+          name: name,
+          file: file,
+        };
+        // Add the new picture to the existing pictures array
+        setPictures((prevPictures) => [...prevPictures, newPicture]);
+      }
     };
-    // Add the new picture to the existing pictures array
-    setPictures((prevPictures) => [...prevPictures, newPicture]);
+    img.onerror = () => {
+      console.error("Invalid image file.");
+    };
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   const handleInputFocus = (svgId, hasFocus) => {
@@ -302,8 +362,10 @@ const OneDesign = () => {
                     <input
                       id="fileInput"
                       type="file"
+                      accept=".jpg,.jpeg,.png,.gif,.webp"
                       onChange={handleFileWithInfo}
                     />
+                    <p className="error-message">{uploadMessages[element.name]}</p>
                   </div>
                 );
               }

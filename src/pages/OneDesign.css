@@ -90,7 +90,6 @@ h1 {
   justify-content: flex-start;
 }
 
-
 .generate-image {
   background-color: #00ff57;
   border: none;
@@ -170,4 +169,8 @@ h1 {
 }
 .loader.hidden {
   display: none;
+}
+
+.error-message {
+  color: red;
 }
