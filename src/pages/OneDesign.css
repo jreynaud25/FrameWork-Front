@@ -11,13 +11,19 @@ h1 {
 
 .main-gui {
   background-color: white;
-  height: 100vh;
+  height: calc(100vh - 50px);
   width: 33.3333%;
-  padding: 1rem;
+  /* padding: 1rem; */
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  .gui-el-wrapper {
+    padding: 1rem;
+  }
+  .footer-wrapper {
+    padding: 1rem;
+  }
 }
 
 .preview {
@@ -173,4 +179,51 @@ h1 {
 
 .error-message {
   color: red;
+}
+
+.admin-btn {
+  background-color: black;
+  border: none;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 0.4rem;
+  padding: 0.5rem;
+  margin: 1rem;
+  height: max-content;
+  flex: 1;
+}
+
+.archived-img {
+  margin: 10px;
+  width: 100px; /* Adjust size as needed */
+  height: auto;
+  cursor: pointer;
+}
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  /* max-height: calc(100vh - 300px); Adjust the height as needed */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+  padding-right: 0 !important;
+}
+
+.image-container {
+  position: relative;
+  margin: 5px;
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
+  visibility: hidden;
+}
+
+.image-container:hover .delete-button {
+  visibility: visible;
 }

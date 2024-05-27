@@ -8,6 +8,8 @@ function ExportDesign(props) {
   const [scale, setScale] = useState(4);
   const [downloadReady, setDownloadReady] = useState(true);
   const { user, isLoggedIn } = useContext(AuthContext);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const { id } = useParams();
   const { selectedFrame, selectedTemplate, design, client } = props;
   const FIGMATOKEN = import.meta.env.VITE_FIGMATOKEN;
@@ -15,7 +17,6 @@ function ExportDesign(props) {
     import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
   //Function for the editing
-
   async function handleNotify(event) {
     event.preventDefault();
     console.log("Should notify", client[0], client[0]._id);
@@ -36,9 +37,32 @@ function ExportDesign(props) {
     }
   }
 
+  async function handleDelete(event, url) {
+    event.preventDefault();
+    selectedFrame.archiveURL.pop(url);
+
+    try {
+      // Send PNG URL data to the backend using axios.post
+      await axios.patch(
+        `${BACKEND_URL}/api/designs/${id}/archiveURL`,
+        {
+          selectedFrame: selectedFrame,
+          archiveURL: url,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error deleting the Archive URL: ", error);
+    }
+  }
+
   //Download the design
 
-  const dowloadDesign = async (idToDownload) => {
+  const dowloadDesign = async (idToDownload, archive) => {
     console.log(
       "Starting the download with params",
       idToDownload,
@@ -58,30 +82,37 @@ function ExportDesign(props) {
       //console.log(response.data.images);
       // Get the URL directly from the images object
       console.log("The URL of the image", response.data.images[idToDownload]);
-      sendPNGURLToBackend(response.data.images[idToDownload]);
-      try {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", response.data.images[idToDownload], true);
-        xhr.responseType = "blob";
 
-        xhr.onload = function () {
-          const blob = xhr.response;
-          // Create a link element
-          const link = document.createElement("a");
-          // Set link properties
-          link.href = window.URL.createObjectURL(blob);
-          link.download = `${design.FigmaName}-${selectedTemplate.name}-${selectedFrame.frameName}.png`;
-          // Append the link to the body and trigger the click event
-          document.body.appendChild(link);
-          link.click();
+      if (archive) {
+        console.log("should archive", response.data.images[idToDownload]);
+        sendPNGURLToBackend(response.data.images[idToDownload], true);
+      } else {
+        sendPNGURLToBackend(response.data.images[idToDownload]);
 
-          // Remove the link from the body
-          document.body.removeChild(link);
-        };
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", response.data.images[idToDownload], true);
+          xhr.responseType = "blob";
 
-        xhr.send();
-      } catch (error) {
-        console.error(error);
+          xhr.onload = function () {
+            const blob = xhr.response;
+            // Create a link element
+            const link = document.createElement("a");
+            // Set link properties
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `${design.FigmaName}-${selectedTemplate.name}-${selectedFrame.frameName}.png`;
+            // Append the link to the body and trigger the click event
+            document.body.appendChild(link);
+            link.click();
+
+            // Remove the link from the body
+            document.body.removeChild(link);
+          };
+
+          xhr.send();
+        } catch (error) {
+          console.error(error);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -89,7 +120,7 @@ function ExportDesign(props) {
     setDownloadReady(true);
   };
 
-  const sendPNGURLToBackend = async (urlToUpdate) => {
+  const sendPNGURLToBackend = async (urlToUpdate, archive) => {
     try {
       // Send PNG URL data to the backend using axios.post
       await axios.post(
@@ -97,6 +128,7 @@ function ExportDesign(props) {
         {
           thumbnailURL: urlToUpdate,
           selectedFrame: selectedFrame,
+          archive: archive,
         },
         {
           headers: {
@@ -139,22 +171,69 @@ function ExportDesign(props) {
           className="btn"
           onClick={(e) => {
             e.preventDefault();
-            dowloadDesign(selectedFrame.frameId);
+            dowloadDesign(selectedFrame.frameId, false);
           }}
         >
           Download Assets{" "}
           <div className={`loader ${!downloadReady ? "" : "hidden"}`}></div>
         </button>
+        <br />
+        <br />
+        <div>
+          <button
+            className="btn"
+            onClick={(e) => {
+              e.preventDefault();
+              dowloadDesign(selectedFrame.frameId, true);
+            }}
+          >
+            Archive{" "}
+          </button>
+        </div>
       </div>
-      {isLoggedIn && user.status === "admin" && (
-        <button className="btn" onClick={handleNotify}>
-          Notify Client
-        </button>
-      )}
+      <div className="image-gallery">
+        {selectedFrame.archiveURL.map((url, index) => {
+          const parts = url.split("/framework/");
+          const afterFramework = parts[1]
+            .replace(".png", "")
+            .replace(/%20/g, " ")
+            .replace(/%23/g, "#"); // Add more replacements as needed
 
-      {/* <button className="btn" onClick={handleDelete}>
-  Delete
-</button> */}
+          return (
+            <div
+              key={url}
+              className="image-container"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <a href={url} target="_blank" rel="noopener noreferrer">
+                <p>{afterFramework}</p>
+                <img className="archived-img" src={url} alt="Archived Image" />
+              </a>
+              {hoveredIndex === index && (
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(event, url)}
+                >
+                  x
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div>
+        {isLoggedIn && user.status === "admin" && (
+          <>
+            <button className="admin-btn" onClick={handleNotify}>
+              Notify Client
+            </button>
+            {/* <button className="admin-btn" onClick={handleDelete}>
+              Delete
+            </button> */}
+          </>
+        )}
+      </div>
     </>
   );
 }

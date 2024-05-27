@@ -21,7 +21,7 @@ a {
   font-family: "Plain";
 }
 main {
-  min-height: 100svh;
+  min-height: calc(100svh - 50px);
   margin-top: 3rem;
 }
 
