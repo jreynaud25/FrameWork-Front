@@ -1,45 +1,43 @@
-
 header {
-	display: flex;
-	align-items: space-between;
-	justify-content: space-between;
-	width: 100vw;
-	padding: 1rem;
-	position: fixed;
-	top: 0;
-	z-index: 10000;
-	mix-blend-mode: difference;
-	color: white;
+  display: flex;
+  align-items: space-between;
+  justify-content: space-between;
+  width: 100vw;
+  height: 50px;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  z-index: 10000;
+  mix-blend-mode: difference;
+  color: white;
 }
 
-
 header a {
-	color: white;
-
+  color: white;
 }
 
 .logoWrapper {
-	height: max-content;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: absolute;
+  height: max-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
 
-	left: 50%;
-	transform: translateX(-50%);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .Navbar {
-	display: flex;
-	width: 30ch;
-	gap: 1rem;
+  display: flex;
+  width: 30ch;
+  gap: 1rem;
 }
 
 .Navbar:last-child {
-	align-items: center;
-	justify-content: flex-end;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .Navbar nav {
-	display: flex;
+  display: flex;
 }
