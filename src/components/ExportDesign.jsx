@@ -85,6 +85,8 @@ function ExportDesign(props) {
 
       if (archive) {
         console.log("should archive", response.data.images[idToDownload]);
+        selectedFrame.archiveURL.push(response.data.images[idToDownload]);
+
         sendPNGURLToBackend(response.data.images[idToDownload], true);
       } else {
         sendPNGURLToBackend(response.data.images[idToDownload]);
@@ -193,11 +195,18 @@ function ExportDesign(props) {
       </div>
       <div className="image-gallery">
         {selectedFrame.archiveURL.map((url, index) => {
+          const currentDate = new Date();
+          const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+          let dateString = currentDate.toLocaleDateString("en-US", options);
+
           const parts = url.split("/framework/");
-          const afterFramework = parts[1]
-            .replace(".png", "")
-            .replace(/%20/g, " ")
-            .replace(/%23/g, "#"); // Add more replacements as needed
+          let afterFramework = `${dateString}-${selectedFrame.sectionName}-${selectedFrame.frameName}`;
+          if (parts[1]) {
+            afterFramework = parts[1]
+              .replace(".png", "")
+              .replace(/%20/g, " ")
+              .replace(/%23/g, "#"); // Add more replacements as needed
+          }
 
           return (
             <div
