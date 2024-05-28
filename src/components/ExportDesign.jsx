@@ -39,7 +39,12 @@ function ExportDesign(props) {
 
   async function handleDelete(event, url) {
     event.preventDefault();
-    selectedFrame.archiveURL.pop(url);
+    // selectedFrame.archiveURL.pull(url);
+
+    const index = selectedFrame.archiveURL.indexOf(url);
+    if (index !== -1) {
+      selectedFrame.archiveURL.splice(index, 1);
+    }
 
     try {
       // Send PNG URL data to the backend using axios.post
